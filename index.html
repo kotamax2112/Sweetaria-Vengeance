@@ -18,9 +18,8 @@
 </div>
 
 <div id="home-screen" class="screen hidden">
-  <button id="settings-btn" class="icon-btn" aria-label="Settings">⚙️</button>
-  
-  <h2 style="margin-bottom:15px; margin-top:40px;">MAIN MENU</h2>
+  <button id="settings-btn" class="icon-btn">⚙️</button>
+  <h2 class="home-title">MAIN MENU</h2>
   <div class="menu-buttons">
     <button id="play-btn" class="btn primary">STORY MODE</button>
     <button id="endless-btn" class="btn">ENDLESS RUN</button>
@@ -37,46 +36,13 @@
     <span><b id="player-name-display">Hero</b></span>
     <span id="level-display">Lv 1</span>
     <span>Score: <b id="score-display">0</b></span>
-    <span>Best: <b id="alltime-score-display">0</b></span>
+    <span>Best: <b id="alltime-display">0</b></span>
     <span id="powerup-indicator" class="hidden"></span>
   </div>
   <div id="level-progress-wrap"><div id="level-progress-fill"></div></div>
   <button id="pause-btn" class="icon-btn">II</button>
   <canvas id="game-canvas" width="800" height="480"></canvas>
   <button id="jump-btn" class="jump-btn">JUMP</button>
-</div>
-
-<div id="pause-menu" class="popup hidden">
-  <div class="panel">
-    <h3>PAUSED</h3>
-    <div class="row" style="margin:15px 0;">
-      <button id="pause-music-btn" class="btn">Music: ON</button>
-      <button id="pause-sfx-btn" class="btn">SFX: ON</button>
-    </div>
-    <button id="resume-btn" class="btn primary">RESUME</button>
-    <div style="margin-top:10px;"></div>
-    <button id="quit-btn" class="btn danger">QUIT TO TITLE</button>
-  </div>
-</div>
-
-<div id="dev-menu" class="popup hidden">
-  <div class="panel">
-    <h3>DEV CONSOLE</h3>
-    <p style="font-size:0.7rem; color:#888;">Warp</p>
-    <div class="dev-grid">
-      <button class="dev-btn" onclick="window.devJump(1)">1</button>
-      <button class="dev-btn" onclick="window.devJump(5)">BOSS 1</button>
-      <button class="dev-btn" onclick="window.devJump(6)">6</button>
-      <button class="dev-btn" onclick="window.devJump(10)">BOSS 2</button>
-    </div>
-    <p style="font-size:0.7rem; color:#888; margin-top:10px;">Cheats</p>
-    <div class="row">
-      <button class="btn small" onclick="window.devPower('shield')">Shield</button>
-      <button class="btn small" onclick="window.devPower('tesla')">Tesla</button>
-      <button class="btn small" onclick="window.devPower('jetpack')">Jetpack</button>
-    </div>
-    <button class="btn secondary close-btn" style="margin-top:15px;">CLOSE</button>
-  </div>
 </div>
 
 <div id="wardrobe-popup" class="popup hidden">
@@ -90,7 +56,6 @@
     
     <div id="appearance-tab" class="wardrobe-tab-content active scroll-col">
       <div class="field"><label>Name</label><input id="player-name-input" type="text" maxlength="12"></div>
-      
       <div class="field"><label>Gender</label>
         <div class="gender-options">
           <button class="btn gender-btn" data-gender="m">Male</button>
@@ -98,19 +63,20 @@
           <button class="btn gender-btn" data-gender="o">Other</button>
         </div>
       </div>
-
-      <div class="field"><label>Shirt</label><div id="shirt-row" class="color-options"></div></div>
-      <div class="field"><label>Pants</label><div id="pants-row" class="color-options"></div></div>
-      <div class="field"><label>Skin Tone</label><div id="skin-row" class="color-options"></div></div>
       <div class="field"><label>Hair Style</label><div id="hair-row" class="item-row"></div></div>
+      <div class="field"><label>Skin Tone</label><div id="skin-row" class="color-options"></div></div>
+      <div class="field"><label>Shirt Color</label><div id="shirt-row" class="color-options"></div></div>
+      <div class="field"><label>Pants Color</label><div id="pants-row" class="color-options"></div></div>
       <div class="field"><label>Held Item</label><div id="item-row" class="item-row"></div></div>
     </div>
 
     <div id="skins-tab" class="wardrobe-tab-content scroll-col">
+      <p class="skins-note">Unlock skins by completing Awards.</p>
       <div id="skins-grid" class="skins-grid"></div>
-      <button id="clear-skin" class="btn" style="margin-top:10px;">Reset Skin</button>
+      <button id="clear-skin" class="btn small" style="margin-top:10px;">Unequip Skin</button>
     </div>
-    <button class="btn secondary close-btn" style="margin-top:10px;">Save & Close</button>
+    
+    <button class="btn secondary close-btn" style="margin-top:15px;">Save & Close</button>
   </div>
 </div>
 
@@ -119,68 +85,77 @@
     <h3>LORE</h3>
     <div class="scroll-col">
       <div class="lore-card">
-        <canvas id="lore-boss1" width="100" height="100"></canvas>
+        <canvas id="lore-boss1" width="120" height="120"></canvas>
         <div>
           <strong>Teen Troll</strong><br>
-          <small>Queen of Sass. She fights with apathy and smartphone notifications. Jumping over her attacks deals "Emotional Damage".</small>
+          <small>Queen of Sass. She fights with apathy and smartphone notifications. Destroying her requires dodging her "cringe" attacks.</small>
         </div>
       </div>
       <div class="lore-card">
-        <canvas id="lore-boss2" width="100" height="100"></canvas>
+        <canvas id="lore-boss2" width="120" height="120"></canvas>
         <div>
           <strong>Big Boss Head</strong><br>
           <small>The Corporate Overlord. He floats above the law. His only weakness is Kindness, which he finds "Disgusting".</small>
         </div>
       </div>
     </div>
-    <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
+    <button class="btn secondary close-btn">Close</button>
   </div>
 </div>
 
-<div id="achievements-popup" class="popup hidden">
+<div id="settings-popup" class="popup hidden">
   <div class="panel">
-    <h3>AWARDS</h3>
-    <div id="achievements-grid" class="ach-grid"></div>
+    <h3>SETTINGS</h3>
+    <div class="row" style="margin:15px 0;">
+      <button id="music-toggle" class="btn">Music: ON</button>
+      <button id="sfx-toggle" class="btn">SFX: ON</button>
+    </div>
+    <button id="reset-progress-btn" class="btn danger">RESET DATA</button>
+    <div style="margin-top:10px;"></div>
+    <button id="open-credits-btn" class="btn">CREDITS</button>
     <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
   </div>
 </div>
 
-<div id="credits-popup" class="popup hidden">
+<div id="pause-menu" class="popup hidden">
   <div class="panel">
-    <h3>CREDITS</h3>
-    <div class="scroll-col" style="font-size:0.8rem; line-height:1.6;">
-      <p><strong>Game Design</strong><br>Dakota Weatherhead</p>
-      <hr style="opacity:0.2; margin:10px 0;">
-      <p><strong>Programming</strong><br>Dakota Weatherhead</p>
-      <hr style="opacity:0.2; margin:10px 0;">
-      <p><strong>Art & Animation</strong><br>Dakota Weatherhead</p>
-      <hr style="opacity:0.2; margin:10px 0;">
-      <p><strong>Music & SFX</strong><br>Dakota Weatherhead</p>
-      <hr style="opacity:0.2; margin:10px 0;">
-      <p><strong>Writing</strong><br>Dakota Weatherhead</p>
+    <h3>PAUSED</h3>
+    <div class="row" style="margin:15px 0;">
+      <button id="pause-music-btn" class="btn small">Music: ON</button>
+      <button id="pause-sfx-btn" class="btn small">SFX: ON</button>
     </div>
-    <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
+    <button id="resume-btn" class="btn primary">RESUME</button>
+    <div style="margin-top:10px;"></div>
+    <button id="quit-btn" class="btn danger">QUIT TO TITLE</button>
   </div>
 </div>
 
-<div id="rpg-overlay" class="screen hidden">
-  <div class="rpg-wrap">
-    <div class="boss-head">😈</div>
-    <div class="boss-hp"><div id="boss-hp-bar"></div></div>
-    <div class="rpg-actions">
-      <button class="btn insult-btn">...</button>
-      <button class="btn insult-btn">...</button>
-      <button class="btn insult-btn">...</button>
-      <button class="btn insult-btn">...</button>
+<div id="dev-menu" class="popup hidden">
+  <div class="panel">
+    <h3>DEV CONSOLE</h3>
+    <p style="color:#888; font-size:0.7rem;">Level Warp</p>
+    <div class="dev-grid">
+      <button class="dev-btn" onclick="window.devJump(1)">1</button>
+      <button class="dev-btn" onclick="window.devJump(5)">BOSS 1</button>
+      <button class="dev-btn" onclick="window.devJump(6)">6</button>
+      <button class="dev-btn" onclick="window.devJump(10)">BOSS 2</button>
     </div>
-    <div id="rpg-log" class="rpg-log"></div>
+    <p style="color:#888; font-size:0.7rem; margin-top:10px;">Cheats</p>
+    <div class="row">
+      <button class="btn small" onclick="window.devPower('shield')">Shield</button>
+      <button class="btn small" onclick="window.devPower('tesla')">Tesla</button>
+      <button class="btn small" onclick="window.devPower('jetpack')">Jet</button>
+    </div>
+    <button class="btn secondary close-btn" style="margin-top:15px;">Close</button>
   </div>
 </div>
 
+<div id="achievements-popup" class="popup hidden"><div class="panel"><h3>AWARDS</h3><div id="achievements-grid" class="ach-grid"></div><button class="btn close-btn">Close</button></div></div>
+<div id="credits-popup" class="popup hidden"><div class="panel"><h3>CREDITS</h3><p>Design & Code<br>Dakota Weatherhead</p><hr style="opacity:0.2"><p>Art & Sound<br>Dakota Weatherhead</p><button class="btn close-btn">Close</button></div></div>
 <div id="start-popup" class="popup hidden"><div class="panel"><h3>CONTINUE?</h3><button id="start-at-last" class="btn primary">Checkpoint</button><button id="start-beginning" class="btn">New Run</button></div></div>
 <div id="share-popup" class="popup hidden"><div class="panel"><h3>Share</h3><input id="share-link" value="https://codepen.io/Dakota-Weatherhead/full/OPMKVgz"><button class="btn close-btn">Close</button></div></div>
 <div id="death-popup" class="popup hidden"><div class="panel"><h3>YOU DIED</h3><button id="death-restart-checkpoint" class="btn primary">Retry</button><button id="death-exit-main" class="btn danger">Quit</button></div></div>
-<div id="settings-popup" class="popup hidden"><div class="panel"><h3>SETTINGS</h3><button id="open-credits-btn" class="btn">CREDITS</button><button class="btn close-btn">Close</button></div></div>
+<div id="rpg-overlay" class="screen hidden"><div class="rpg-wrap"><div class="boss-head">😈</div><div class="boss-hp"><div id="boss-hp-bar"></div></div><div class="rpg-actions"><button class="btn insult-btn"></button><button class="btn insult-btn"></button><button class="btn insult-btn"></button><button class="btn insult-btn"></button></div><div id="rpg-log" class="rpg-log"></div></div></div>
 
 </body>
 </html>
