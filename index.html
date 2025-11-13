@@ -1,0 +1,298 @@
+<!-- Sweetaria: Vengeance — Alpha Build 1.1 (HTML)
+     Baseline: Full Stable Version 1.0
+     Adds:
+       - Endless Run button
+       - Death menu + confirm return
+       - Credits popup
+       - Hooks for dev menu / bosses / endless / RPG
+-->
+
+<!-- ====== TITLE ====== -->
+<div id="title-screen" class="screen">
+  <div id="title-bg">
+    <div class="flame layer1"></div>
+    <div class="flame layer2"></div>
+  </div>
+  <div class="title-content">
+    <h1 class="game-title">SWEETARIA:<br><span class="sub">VENGEANCE</span></h1>
+    <p class="tap-to-start">Tap to Begin</p>
+  </div>
+</div>
+
+<!-- ====== HOME ====== -->
+<div id="home-screen" class="screen hidden">
+  <button id="settings-btn" class="icon-btn settings" aria-label="Settings">⚙️</button>
+  <h2 class="home-title">Welcome to Sweetaria</h2>
+
+  <div class="menu-buttons">
+    <button id="play-btn" class="btn primary">Play Game</button>
+    <!-- NEW: Endless mode button -->
+    <button id="endless-btn" class="btn">Endless Run</button>
+
+    <button id="wardrobe-btn" class="btn">Wardrobe</button>
+    <button id="clues-btn" class="btn">Clues</button>
+    <button id="lore-btn" class="btn">Lore</button>
+    <button id="achievements-btn" class="btn">Achievements</button>
+    <button id="share-btn" class="btn">Share This Game</button>
+    <button id="return-title-btn" class="btn small">Return to Title Screen</button>
+  </div>
+</div>
+
+<!-- ====== GAME ====== -->
+<div id="game-screen" class="screen hidden">
+  <div id="top-ui">
+    <span id="player-name-display">Hero</span>
+    <span id="level-display">Level 1</span>
+    <span>Score: <span id="score-display">0</span></span>
+    <span>All-Time: <span id="alltime-display">0</span></span>
+    <span id="shield-indicator" class="chip hidden">🛡️ x<span id="shield-count">0</span></span>
+    <span id="jetpack-indicator" class="chip hidden">🚀 <span id="jetpack-count">8</span>s</span>
+    <span id="lives-indicator" class="chip hidden">❤❤❤</span>
+  </div>
+
+  <!-- Level progress -->
+  <div id="level-progress-wrap">
+    <div id="level-progress-fill"></div>
+  </div>
+
+  <!-- Pause -->
+  <button id="pause-btn" class="icon-btn pause" aria-label="Pause">⏸</button>
+
+  <!-- Canvas -->
+  <canvas id="game-canvas" width="800" height="480"></canvas>
+
+  <!-- Single control -->
+  <button id="jump-btn" class="jump-btn" aria-label="Jump">JUMP</button>
+</div>
+
+<!-- ====== PAUSE MENU ====== -->
+<div id="pause-menu" class="popup hidden">
+  <div class="panel">
+    <h3>Game Paused</h3>
+    <div id="resume-countdown" class="hidden"></div>
+    <button id="resume-btn" class="btn primary">Resume</button>
+    <button id="quit-btn" class="btn danger">Quit to Home</button>
+  </div>
+</div>
+
+<!-- ====== START POPUP ====== -->
+<div id="start-popup" class="popup hidden">
+  <div class="panel">
+    <h3>Continue from Last Checkpoint?</h3>
+    <p>You can start where you left off, or begin from the very start.</p>
+    <div class="row">
+      <button id="start-at-last" class="btn primary">Start at Last Checkpoint</button>
+      <button id="start-beginning" class="btn">Start from Beginning</button>
+    </div>
+    <button class="btn secondary close-btn" data-close="#start-popup">Close</button>
+  </div>
+</div>
+
+<!-- ====== WARDROBE (Stable Layout) ====== -->
+<div id="wardrobe-popup" class="popup hidden">
+  <div class="panel wide">
+    <h3>Wardrobe</h3>
+
+    <!-- Preview -->
+    <div id="player-preview"></div>
+
+    <!-- Tabs -->
+    <div class="wardrobe-tabs">
+      <button class="wardrobe-tab active" data-tab="appearance">Appearance</button>
+      <button class="wardrobe-tab" data-tab="skins">Skins</button>
+    </div>
+
+    <!-- Appearance -->
+    <div id="appearance-tab" class="wardrobe-tab-content active scroll-col">
+      <div class="field">
+        <label for="player-name-input"><strong>Name</strong></label>
+        <input id="player-name-input" type="text" maxlength="12" placeholder="Hero"/>
+      </div>
+
+      <div class="field">
+        <label><strong>Gender</strong></label>
+        <div id="gender-options" class="gender-options">
+          <button class="btn gender-btn" data-gender="m">Male</button>
+          <button class="btn gender-btn" data-gender="f">Female</button>
+          <button class="btn gender-btn" data-gender="o">Other</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><strong>Hair Style</strong></label>
+        <div id="hairstyle-options" class="item-row"></div>
+      </div>
+
+      <div class="field">
+        <label><strong>Skin Tone</strong></label>
+        <div id="skin-tone-row" class="color-options"></div>
+      </div>
+
+      <div class="field">
+        <label><strong>Shirt Color</strong></label>
+        <div id="shirt-options" class="color-options">
+          <button class="color-swatch" data-color="red" style="background:#ff5a5a"></button>
+          <button class="color-swatch" data-color="blue" style="background:#4ea8ff"></button>
+          <button class="color-swatch" data-color="green" style="background:#37d67a"></button>
+          <button class="color-swatch" data-color="purple" style="background:#a06bff"></button>
+          <button class="color-swatch" data-color="orange" style="background:#ff8d3b"></button>
+          <button class="color-swatch" data-color="teal" style="background:#17c5b6"></button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><strong>Pants</strong></label>
+        <div id="pants-row" class="color-options"></div>
+      </div>
+
+      <div class="field">
+        <label><strong>Held Item</strong></label>
+        <div id="item-row" class="item-row">
+          <button class="item-swatch" data-item="none">None</button>
+          <button class="item-swatch" data-item="sword">Sword</button>
+          <button class="item-swatch" data-item="scepter">Scepter</button>
+          <button class="item-swatch" data-item="mallet">Mallet</button>
+          <button class="item-swatch" data-item="cleaver">Cleaver</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skins -->
+    <div id="skins-tab" class="wardrobe-tab-content scroll-col">
+      <p class="skins-note">Unlock skins by completing achievements! Tap a skin to select/deselect, then press Save.</p>
+      <div id="skins-grid" class="skins-grid"></div>
+      <div class="row" style="margin-top:10px">
+        <button id="save-skin" class="btn primary">Save</button>
+        <button id="clear-skin" class="btn">Clear</button>
+        <button id="close-skins" class="btn secondary">Close</button>
+      </div>
+    </div>
+
+    <button id="close-wardrobe" class="btn secondary close-btn">Close</button>
+  </div>
+</div>
+
+<!-- ====== CLUES ====== -->
+<div id="clues-popup" class="popup hidden">
+  <div class="panel">
+    <h3>Clues</h3>
+    <ul id="clues-list"></ul>
+    <button id="close-clues" class="btn secondary close-btn">Close</button>
+  </div>
+</div>
+
+<!-- ====== LORE ====== -->
+<div id="lore-popup" class="popup hidden">
+  <div class="panel">
+    <h3>Lore of Sweetaria</h3>
+    <div id="lore-text" class="lore-grid">
+      <div class="lore-card">
+        <canvas id="lore-boss1" width="96" height="80"></canvas>
+        <div><strong>Cell Phone Teen Troll</strong><br><small>Emoji-slinging menace of Level 5.</small></div>
+      </div>
+      <div class="lore-card">
+        <canvas id="lore-boss2" width="96" height="80"></canvas>
+        <div><strong>Big Boss Head</strong><br><small>Final tyrant at Level 10.</small></div>
+      </div>
+    </div>
+    <button id="close-lore" class="btn secondary close-btn">Close</button>
+  </div>
+</div>
+
+<!-- ====== ACHIEVEMENTS ====== -->
+<div id="achievements-popup" class="popup hidden">
+  <div class="panel">
+    <h3>Achievements</h3>
+    <div id="achievements-grid" class="ach-grid"></div>
+    <button id="close-achievements" class="btn secondary close-btn">Close</button>
+  </div>
+</div>
+
+<!-- ====== SHARE ====== -->
+<div id="share-popup" class="popup hidden">
+  <div class="panel">
+    <h3>Share Sweetaria</h3>
+    <p>Send this link to your friends!</p>
+    <input id="share-link" type="text" readonly value="https://codepen.io/Dakota-Weatherhead/full/OPMKVgz" />
+    <button id="copy-share-btn" class="btn primary">Copy Link</button>
+    <button id="close-share" class="btn secondary close-btn">Close</button>
+  </div>
+</div>
+
+<!-- ====== SETTINGS ====== -->
+<div id="settings-popup" class="popup hidden">
+  <div class="panel">
+    <h3>Settings</h3>
+    <div class="row">
+      <button id="music-toggle" class="btn">Music: On</button>
+      <button id="sfx-toggle" class="btn">SFX: On</button>
+    </div>
+    <button id="reset-progress-btn" class="btn danger">Reset Progress</button>
+
+    <!-- NEW: Credits button here -->
+    <button id="open-credits-btn" class="btn">Credits</button>
+
+    <button id="close-settings" class="btn secondary close-btn">Close</button>
+  </div>
+</div>
+
+<!-- ====== CREDITS POPUP ====== -->
+<div id="credits-popup" class="popup hidden">
+  <div class="panel">
+    <h3>Sweetaria: Vengeance — Credits</h3>
+    <p>Design: Dakota Weatherhead</p>
+    <p>Programming: Dakota Weatherhead</p>
+    <p>Art & Animation: Dakota Weatherhead</p>
+    <p>Writing & Lore: Dakota Weatherhead</p>
+    <p>QA & Testing: Dakota Weatherhead</p>
+    <p>Executive Producer: Dakota Weatherhead</p>
+    <p style="margin-top:10px;font-size:0.8rem;">Thanks for playing.</p>
+    <button id="close-credits" class="btn secondary">Exit</button>
+  </div>
+</div>
+
+<!-- ====== RPG OVERLAY (FINAL BOSS) ====== -->
+<div id="rpg-overlay" class="screen hidden">
+  <div class="rpg-wrap">
+    <div class="rpg-boss">
+      <div class="boss-head">😈</div>
+      <div class="boss-hp"><div id="boss-hp-bar"></div></div>
+      <div class="boss-name">BIG BOSS HEAD</div>
+    </div>
+    <div class="rpg-actions">
+      <!-- JS will replace/update labels and damage; these are initial defaults -->
+      <button class="btn insult-btn" data-dmg="3"  data-kind="false">Student Debt Relief</button>
+      <button class="btn insult-btn" data-dmg="4"  data-kind="false">Universal Healthcare</button>
+      <button class="btn insult-btn" data-dmg="5"  data-kind="false">Trans Rights</button>
+      <button class="btn insult-btn" data-dmg="6"  data-kind="false">Young People Buying Homes</button>
+      <button class="btn insult-btn" data-dmg="8"  data-kind="false">SNAP Benefits</button>
+      <button class="btn insult-btn" data-dmg="8"  data-kind="true">Kindness</button>
+    </div>
+    <div id="rpg-log" class="rpg-log"></div>
+  </div>
+</div>
+
+<!-- ====== DEATH MENU ====== -->
+<div id="death-popup" class="popup hidden">
+  <div class="panel">
+    <h3>You Fell in Sweetaria</h3>
+    <p id="death-reason">You died.</p>
+    <div class="row" style="margin-top:10px;">
+      <button id="death-restart-checkpoint" class="btn primary">Restart from Checkpoint</button>
+      <button id="death-restart-beginning" class="btn">Restart from Beginning</button>
+      <button id="death-exit-main" class="btn danger">Exit to Main Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== CONFIRM RETURN POPUP ====== -->
+<div id="confirm-return" class="popup hidden">
+  <div class="panel">
+    <h3>Exit to Main Menu?</h3>
+    <p>Your progress in this run will be lost, but your overall progress and unlocks stay saved.</p>
+    <div class="row" style="margin-top:10px;">
+      <button id="confirm-return-yes" class="btn danger">Yes, Exit</button>
+      <button id="confirm-return-no" class="btn secondary">Cancel</button>
+    </div>
+  </div>
+</div>
