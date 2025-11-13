@@ -340,22 +340,18 @@
 
   /* ---------- UI binding ---------- */
 
-  function bindTitle(){
+    function bindTitle(){
     const t = SV.screens.title;
     if(!t) return;
-    t.addEventListener('click', (e)=>{
-      const content = qs('.title-content', t);
-      if(!content) return;
-      const r = content.getBoundingClientRect();
-      if(
-        e.clientX >= r.left-40 && e.clientX <= r.right+40 &&
-        e.clientY >= r.top-60 && e.clientY <= r.bottom+80
-      ){
-        showScreen('home');
-        playMusic('home');
-      }
+    
+    // FIX: Listen for a click anywhere on the title screen element, 
+    // instead of calculating specific coordinates around the text.
+    t.addEventListener('click', () => {
+      showScreen('home');
+      playMusic('home');
     });
   }
+
 
   /* UPDATED SETTINGS BINDING (Fixes Credits) */
   function bindSettings(){
