@@ -191,21 +191,45 @@
 
 <!-- ====== LORE ====== -->
 <div id="lore-popup" class="popup hidden">
-  <div class="panel">
+  <div class="panel wide">
     <h3>Lore of Sweetaria</h3>
-    <div id="lore-text" class="lore-grid">
-      <div class="lore-card">
-        <canvas id="lore-boss1" width="96" height="80"></canvas>
-        <div><strong>Cell Phone Teen Troll</strong><br><small>Emoji-slinging menace of Level 5.</small></div>
+    <div class="scroll-col" style="max-height: 60vh; text-align: left;">
+      
+      <div class="lore-card" style="align-items: start;">
+        <div style="text-align:center;">
+            <canvas id="lore-boss1" width="120" height="120"></canvas>
+            <div style="margin-top:5px; font-size:0.7rem; color:#ff7bc5;">TEEN TROLL</div>
+        </div>
+        <div>
+          <strong style="font-size:1.1rem;">The Cell Phone Teen Troll</strong>
+          <p style="font-size:0.8rem; line-height:1.5; margin-top:8px; color:#b8c6e3;">
+            Born from the digital waste of a thousand unread notifications, the Teen Troll haunts the mid-levels of Sweetaria. He does not fight with swords, but with pure, weaponized apathy. 
+            <br><br>
+            Legend says he was once a regular boy who stared into the abyss of a scrolling feed until the feed stared back. Now, he guards the Gateway to the Upper Stratum, ensuring that only those with "no chill" may pass. His thumbs move faster than the speed of light, and his primary attack is 'The Ratio'—a devastating beam of negative engagement.
+          </p>
+        </div>
       </div>
-      <div class="lore-card">
-        <canvas id="lore-boss2" width="96" height="80"></canvas>
-        <div><strong>Big Boss Head</strong><br><small>Final tyrant at Level 10.</small></div>
+
+      <div class="lore-card" style="align-items: start; margin-top:20px;">
+        <div style="text-align:center;">
+            <canvas id="lore-boss2" width="120" height="120"></canvas>
+            <div style="margin-top:5px; font-size:0.7rem; color:#ffa63d;">BIG BOSS HEAD</div>
+        </div>
+        <div>
+          <strong style="font-size:1.1rem;">The Big Boss Head</strong>
+          <p style="font-size:0.8rem; line-height:1.5; margin-top:8px; color:#b8c6e3;">
+            A manifestation of pure corporate generational spite. The Big Boss Head floats eternally at the summit of the spire, fueled by the tears of millennials and the fluctuating housing market.
+            <br><br>
+            He possesses no body, for he needs no hands to crush dreams—only policy changes. He believes the world stopped turning in 1985 and that Sweetaria's resources are best kept in an offshore cloud account. Defeating him requires not just strength, but the ultimate weapon: Kindness (and perhaps a little bit of systemic reform).
+          </p>
+        </div>
       </div>
+
     </div>
-    <button id="close-lore" class="btn secondary close-btn">Close</button>
+    <button id="close-lore" class="btn secondary close-btn" style="margin-top:12px;">Close Tome</button>
   </div>
 </div>
+
 
 <!-- ====== ACHIEVEMENTS ====== -->
 <div id="achievements-popup" class="popup hidden">
