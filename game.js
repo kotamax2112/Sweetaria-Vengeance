@@ -1,8 +1,8 @@
 /* =========================================================
    SWEETARIA: VENGEANCE
-   Alpha Build 1.2.2 JS
-   - Fixes: Title screen now responds to clicks anywhere (no hitbox).
-   - Includes: All Wardrobe fixes, Credits wiring, Achievements, Lore art.
+   Alpha Build 1.2.3 JS
+   - Update: Lore Art & Text for Teen Troll (Female).
+   - Includes: Mobile Tap Fix, Wardrobe Fixes, Credits, etc.
    ========================================================= */
 
 (() => {
@@ -338,13 +338,12 @@
 
   /* ---------- UI binding ---------- */
 
-  /* FIX: TAP ANYWHERE ON TITLE SCREEN */
   function bindTitle(){
     const t = SV.screens.title;
     if(!t) return;
-    
-    // Simply listen for a click anywhere on the title screen div
-    t.addEventListener('click', () => {
+    // 'pointerdown' ensures immediate response on mobile & desktop
+    t.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
       showScreen('home');
       playMusic('home');
     });
@@ -1000,9 +999,10 @@
     if(changed) store.set('sv_progress', SV.progress);
   }
 
-  /* ---------- lore ---------- */
+  /* ---------- lore (UPDATED ART FOR TEEN TROLL) ---------- */
 
   function drawLoreCanvases(){
+    // BOSS 1: TEEN TROLL (FEMALE REDESIGN)
     const c1 = qs('#lore-boss1');
     if(c1){
       const ctx = c1.getContext('2d');
@@ -1019,24 +1019,34 @@
       ctx.save();
       ctx.translate(w/2-30, h/2-30);
       ctx.scale(3,3); 
+      
+      // Body/Top
       ctx.fillStyle = '#5e6c8c'; 
       ctx.fillRect(6, 8, 8, 10); 
+      
+      // Skin
       ctx.fillStyle = '#ffd5b5'; 
-      ctx.fillRect(7, 4, 6, 4); 
-      ctx.fillStyle = '#f6c1ff';
-      ctx.fillRect(6, 1, 2, 3);
-      ctx.fillRect(9, 0, 2, 4);
-      ctx.fillRect(12, 2, 2, 3);
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(12, 9, 6, 8); 
-      ctx.fillStyle = '#333';
-      ctx.fillRect(16, 10, 1, 1); 
+      ctx.fillRect(7, 4, 6, 5); // Slightly longer face
+      
+      // Hair (Long Hot Pink Pigtails)
+      ctx.fillStyle = '#ff91e0';
+      ctx.fillRect(6, 2, 8, 3); // Bangs
+      ctx.fillRect(4, 3, 3, 9); // Left Pigtail
+      ctx.fillRect(13, 3, 3, 9); // Right Pigtail
+
+      // Eyes (Sassy)
       ctx.fillStyle = '#000';
-      ctx.fillRect(8, 5, 1, 1);
-      ctx.fillRect(10, 5, 1, 1);
+      ctx.fillRect(8, 6, 1, 1);
+      ctx.fillRect(11, 6, 1, 1);
+
+      // Phone (Held out)
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(14, 9, 5, 7); 
+      
       ctx.restore();
     }
 
+    // BOSS 2: BIG BOSS HEAD
     const c2 = qs('#lore-boss2');
     if(c2){
       const ctx = c2.getContext('2d');
