@@ -1,5 +1,6 @@
 /* =========================================================
-   SWEETARIA: VENGEANCE — FULL CSS (Stable + Alpha 1.1 Additions)
+   SWEETARIA: VENGEANCE — FULL CSS (Alpha 1.2.2)
+   - Includes Title Screen Fixes (Z-Index & Pointer Events)
 ========================================================= */
 
 :root{
@@ -87,8 +88,12 @@ button,input{font-family:inherit}
   background:rgba(255,255,255,.10);
 }
 
-/* Title */
-#title-screen{display:flex;justify-content:center;align-items:center;overflow:hidden;}
+/* Title - UPDATED FOR TAP FIX */
+#title-screen{
+  display:flex; justify-content:center; align-items:center; overflow:hidden;
+  z-index: 1000; /* Force on top */
+  cursor: pointer; /* Hand icon */
+}
 #title-bg{position:absolute;inset:0;overflow:hidden}
 #title-bg .flame{
   position:absolute;inset:-10%;
@@ -104,9 +109,13 @@ button,input{font-family:inherit}
 }
 #title-bg .layer1{ animation: arcaneFlow1 18s linear infinite; }
 #title-bg .layer2{ animation: arcaneFlow2 26s linear infinite; opacity:.7; }
-.title-content{position:relative;z-index:2;text-align:center;
+
+.title-content{
+  position:relative; z-index:2; text-align:center;
   text-shadow:0 0 12px rgba(170,120,255,0.8),0 0 22px rgba(90,170,255,0.6);
-  transform:translateY(-8px);}
+  transform:translateY(-8px);
+  pointer-events: none; /* Clicks pass through text to the screen listener */
+}
 .game-title{line-height:1.05;font-size:2.35rem;letter-spacing:1px}
 .game-title .sub{font-size:1.45rem;display:inline-block;transform:translateY(4px);color:#b9d8ff}
 .tap-to-start{margin-top:16px;font-size:.95rem;animation:pulse 1.5s infinite}
@@ -148,6 +157,8 @@ button,input{font-family:inherit}
   width:96vw; max-width:820px; height:48vh; margin:0 auto;
   background:#0f1622; border:2px solid rgba(255,255,255,.12); border-radius:12px;
   box-shadow: var(--shadow-2);
+  /* Backup gradient */
+  background-image:linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.08));
 }
 .jump-btn{
   width:72%; margin:12px auto 10px; padding:18px 16px; font-size:1.1rem;
@@ -182,7 +193,7 @@ button,input{font-family:inherit}
 }
 .achievement-tile .lock-ghost{position:absolute; right:8px; top:8px; font-size:18px; opacity:.35;}
 
-/* Wardrobe (stable) */
+/* Wardrobe */
 #player-preview{
   width:100%; height:220px; background:#0d121c;
   border:1px solid rgba(255,255,255,.15); border-radius:12px;
@@ -195,12 +206,12 @@ button,input{font-family:inherit}
 .wardrobe-tab-content{display:none}
 .wardrobe-tab-content.active{display:block}
 .color-options,.gender-options,.item-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
-.color-swatch{width:28px; height:28px; border-radius:50%; border:2px solid rgba(255,255,255,.55); cursor:pointer; box-shadow:var(--shadow-1);}
+.color-swatch{width:28px; height:28px; border-radius:50%; border:2px solid rgba(255,255,255,.55); cursor:pointer; box-shadow:var(--shadow-1); transition:transform .1s;}
 .item-swatch{padding:8px 12px; border-radius:10px; background:#1a2235; border:1px solid rgba(255,255,255,.15); cursor:pointer;}
 #pants-row .color-swatch{border-color:#91a2c0}
 #hairstyle-options .item-swatch{min-width:84px; justify-content:center}
 
-/* Skins Tarot grid (stable) */
+/* Skins Tarot grid */
 .skins-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:10px;}
 .skin-card{position:relative; width:100%; padding-top:140%; background:#121a2d; border:2px solid rgba(255,255,255,.25); border-radius:14px; overflow:hidden; box-shadow:var(--shadow-1);}
 .skin-card .inner{position:absolute; inset:8px; border-radius:10px; background:#0f1525; display:flex; justify-content:center; align-items:center;}
@@ -225,13 +236,10 @@ button,input{font-family:inherit}
 .rpg-actions{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:10px}
 .rpg-log{height:22vh; background:#0f1520; border:1px solid rgba(255,255,255,.15); border-radius:8px; overflow:auto; padding:8px; font-size:.72rem; text-align:left;}
 
-/* Canvas backup gradient */
-#game-canvas{background-image:linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.08));}
-
 /* Lore canvases */
 #lore-boss1,#lore-boss2{display:block; width:96px; height:80px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:#0b1220;}
 
-/* Death / confirm overlays (alpha additions) */
+/* Death / confirm overlays */
 #death-popup .panel,
 #confirm-return .panel{
   max-width:420px;
