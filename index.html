@@ -19,16 +19,15 @@
 
 <div id="home-screen" class="screen hidden">
   <button id="settings-btn" class="icon-btn" aria-label="Settings">⚙️</button>
-  <h2 style="margin-bottom:20px; margin-top:40px; text-shadow:0 0 10px rgba(0,0,0,0.5);">MAIN MENU</h2>
+  <h2 style="margin-bottom:15px; margin-top:30px; text-shadow:0 0 10px rgba(0,0,0,0.5);">MAIN MENU</h2>
   <div class="menu-buttons">
     <button id="play-btn" class="btn primary">STORY MODE</button>
     <button id="endless-btn" class="btn">ENDLESS RUN</button>
     <button id="wardrobe-btn" class="btn">WARDROBE</button>
-    <div class="row">
-      <button id="lore-btn" class="btn small">LORE</button>
-      <button id="achievements-btn" class="btn small">AWARDS</button>
-    </div>
+    <button id="lore-btn" class="btn">LORE</button>
+    <button id="achievements-btn" class="btn">AWARDS</button>
     <button id="share-btn" class="btn secondary">SHARE</button>
+    <button id="return-title-btn" class="btn danger">RETURN TO TITLE</button>
   </div>
 </div>
 
@@ -49,8 +48,8 @@
   <div class="panel">
     <h3>PAUSED</h3>
     <div class="row" style="margin:15px 0;">
-      <button id="pause-music-btn" class="btn small">Music: ON</button>
-      <button id="pause-sfx-btn" class="btn small">SFX: ON</button>
+      <button id="pause-music-btn" class="btn">Music: ON</button>
+      <button id="pause-sfx-btn" class="btn">SFX: ON</button>
     </div>
     <button id="resume-btn" class="btn primary">RESUME</button>
     <div style="margin-top:10px;"></div>
@@ -125,7 +124,7 @@
     </div>
 
     <div id="skins-tab" class="wardrobe-tab-content scroll-col">
-      <p class="skins-note">Unlock skins via Achievements.</p>
+      <p class="skins-note" style="font-size:0.7rem; margin-bottom:8px;">Unlock skins via Awards.</p>
       <div id="skins-grid" class="skins-grid"></div>
       <div class="row" style="margin-top:10px">
         <button id="clear-skin" class="btn">Reset Skin</button>
@@ -141,7 +140,7 @@
     <div class="scroll-col">
       <div class="lore-card">
         <canvas id="lore-boss1" width="100" height="100"></canvas>
-        <div><strong>Teen Troll</strong><br><small>Queen of Sass. Defeat her by dodging her cringe attacks.</small></div>
+        <div><strong>Teen Troll</strong><br><small>Queen of Sass. Defeated by dodging her cringe attacks.</small></div>
       </div>
       <div class="lore-card">
         <canvas id="lore-boss2" width="100" height="100"></canvas>
