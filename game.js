@@ -689,7 +689,8 @@
   let wardrobePreviewCanvas = null;
   let wardrobePreviewCtx = null;
 
-  function initWardrobe(){
+    function initWardrobe(){
+    // 1. Setup Canvas
     const holder = qs('#player-preview');
     if(holder){
       holder.innerHTML = '';
@@ -701,6 +702,94 @@
       wardrobePreviewCtx = wardrobePreviewCanvas.getContext('2d');
       drawWardrobePreview();
     }
+
+    // 2. Tab Switching Logic (Fixes "Menu Inactive" issue)
+    const tabs = qsa('.wardrobe-tab');
+    tabs.forEach(t => {
+      t.onclick = () => {
+        // UI Feedback
+        playSfx(SFX.click);
+        
+        // Toggle Active Class on Tabs
+        tabs.forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+
+        // Show Correct Content
+        const targetId = t.getAttribute('data-tab'); // 'appearance' or 'skins'
+        qsa('.wardrobe-tab-content').forEach(c => c.classList.remove('active'));
+        
+        const targetContent = qs(`#${targetId}-tab`);
+        if(targetContent) targetContent.classList.add('active');
+      };
+    });
+
+    // 3. Name Input
+    const nameInput = qs('#player-name-input');
+    if(nameInput){
+      nameInput.value = SV.settings.playerName || 'Hero';
+      nameInput.oninput = ()=>{
+        SV.settings.playerName = nameInput.value.slice(0,12) || 'Hero';
+        store.set('sv_settings', SV.settings);
+        updateHUD();
+        drawWardrobePreview();
+      };
+    }
+
+    // 4. Gender Buttons
+    const genderButtons = qsa('.gender-btn');
+    genderButtons.forEach(btn=>{
+      const g = btn.getAttribute('data-gender');
+      if(g === SV.settings.gender) btn.classList.add('primary');
+      else btn.classList.remove('primary');
+      
+      btn.onclick = ()=>{
+        playSfx(SFX.click);
+        SV.settings.gender = g;
+        store.set('sv_settings', SV.settings);
+        genderButtons.forEach(b=>b.classList.remove('primary'));
+        btn.classList.add('primary');
+        buildHairOptions();
+        drawWardrobePreview();
+      };
+    });
+
+    // 5. Build Dynamic Options
+    buildHairOptions();
+    buildToneOptions();
+    bindShirtOptions(); // NEW: Actually bind the shirt buttons!
+    buildPantsOptions();
+    buildItemOptions();
+    buildSkinsGrid();
+  }
+
+  // NEW FUNCTION: Handles static shirt buttons in HTML
+  function bindShirtOptions(){
+    const row = qs('#shirt-options');
+    if(!row) return;
+    const btns = qsa('.color-swatch', row);
+    
+    btns.forEach(btn => {
+      const col = btn.getAttribute('data-color');
+      
+      // Visual selection state (white border)
+      if(col === SV.settings.shirt){
+        btn.style.boxShadow = '0 0 0 3px #fff';
+        btn.style.transform = 'scale(1.1)';
+      } else {
+        btn.style.boxShadow = 'none';
+        btn.style.transform = 'scale(1)';
+      }
+
+      btn.onclick = () => {
+        playSfx(SFX.click);
+        SV.settings.shirt = col;
+        store.set('sv_settings', SV.settings);
+        bindShirtOptions(); // Re-run to update borders
+        drawWardrobePreview();
+      };
+    });
+  }
+
 
     const nameInput = qs('#player-name-input');
     if(nameInput){
