@@ -81,13 +81,18 @@
   };
 
   const ACHIEVEMENTS = [
-    { id:'beat_boss1',  title:'Emoji Dodger',     desc:'Defeat Cell Phone Teen Troll (Lv5)' },
-    { id:'beat_boss2',  title:'Final Blow',       desc:'Defeat Big Boss Head (Lv10)' },
-    { id:'kind_only',   title:'Kindness Wins',    desc:'Use only Kindness against Big Boss Head' },
-    { id:'100_jumps',   title:'Hops Master',      desc:'Perform 100 jumps total' },
-    { id:'long_run',    title:'Endurer',          desc:'Survive 10 minutes in one run' }
-    // (more can be added as needed)
-  ];
+  { id:'beat_boss1',  title:'Emoji Dodger',     desc:'Defeat Cell Phone Teen Troll (Lv5)' },
+  { id:'beat_boss2',  title:'Final Blow',       desc:'Defeat Big Boss Head (Lv10)' },
+  { id:'kind_only',   title:'Kindness Wins',    desc:'Defeat Boss 2 using ONLY Kindness' },
+  { id:'100_jumps',   title:'Hops Master',      desc:'Perform 100 jumps total' },
+  { id:'long_run',    title:'Endurer',          desc:'Survive 10 minutes in one run' },
+  { id:'die_lot',     title:'Glutton for Punishment', desc:'Die 10 times total' },
+  { id:'shield_max',  title:'Invincible',       desc:'Collect 3 shields at once' },
+  { id:'sky_high',    title:'Astronaut',        desc:'Use the Jetpack for 30 seconds total' },
+  { id:'all_skins',   title:'Fashionista',      desc:'Unlock all skins' },
+  { id:'secret_dev',  title:'The 2112',         desc:'Find the Developer Menu' }
+];
+
 
   const BOSS1_QUOTES = [
     "Omg I just screenshotted that.",
