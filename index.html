@@ -18,8 +18,8 @@
 </div>
 
 <div id="home-screen" class="screen hidden">
-  <button id="settings-btn" class="icon-btn">⚙️</button>
-  <h2 style="margin-bottom:20px; margin-top:40px;">MAIN MENU</h2>
+  <button id="settings-btn" class="icon-btn" aria-label="Settings">⚙️</button>
+  <h2 style="margin-bottom:20px; margin-top:40px; text-shadow:0 0 10px rgba(0,0,0,0.5);">MAIN MENU</h2>
   <div class="menu-buttons">
     <button id="play-btn" class="btn primary">STORY MODE</button>
     <button id="endless-btn" class="btn">ENDLESS RUN</button>
@@ -61,7 +61,7 @@
 <div id="dev-menu" class="popup hidden">
   <div class="panel">
     <h3>DEV CONSOLE</h3>
-    <p style="font-size:0.7rem; color:#888;">Level Warp</p>
+    <p style="font-size:0.7rem; color:#888; margin-bottom:5px;">Level Warp</p>
     <div class="dev-grid">
       <button class="dev-btn" onclick="window.devJump(1)">1</button>
       <button class="dev-btn" onclick="window.devJump(2)">2</button>
@@ -74,7 +74,7 @@
       <button class="dev-btn" onclick="window.devJump(9)">9</button>
       <button class="dev-btn" onclick="window.devJump(10)">BOSS 2</button>
     </div>
-    <p style="font-size:0.7rem; color:#888; margin-top:10px;">Powerups</p>
+    <p style="font-size:0.7rem; color:#888; margin-top:10px; margin-bottom:5px;">Cheats</p>
     <div class="row">
       <button class="btn small" onclick="window.devPower('shield')">+ Shield</button>
       <button class="btn small" onclick="window.devPower('laser')">+ Laser</button>
@@ -148,7 +148,7 @@
         <div><strong>Big Boss Head</strong><br><small>The final corporate overlord. Weak to kindness.</small></div>
       </div>
     </div>
-    <button class="btn secondary close-btn">Close</button>
+    <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
   </div>
 </div>
 
@@ -156,7 +156,7 @@
   <div class="panel">
     <h3>Awards</h3>
     <div id="achievements-grid" class="ach-grid"></div>
-    <button class="btn secondary close-btn">Close</button>
+    <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
   </div>
 </div>
 
