@@ -19,7 +19,7 @@
 
 <div id="home-screen" class="screen hidden">
   <button id="settings-btn" class="icon-btn">⚙️</button>
-  <h2 style="margin-bottom:20px;">MAIN MENU</h2>
+  <h2 style="margin-bottom:20px; margin-top:40px;">MAIN MENU</h2>
   <div class="menu-buttons">
     <button id="play-btn" class="btn primary">STORY MODE</button>
     <button id="endless-btn" class="btn">ENDLESS RUN</button>
@@ -54,14 +54,14 @@
     </div>
     <button id="resume-btn" class="btn primary">RESUME</button>
     <div style="margin-top:10px;"></div>
-    <button id="quit-btn" class="btn danger">QUIT</button>
+    <button id="quit-btn" class="btn danger">QUIT TO TITLE</button>
   </div>
 </div>
 
 <div id="dev-menu" class="popup hidden">
   <div class="panel">
-    <h3>DEVELOPER CONSOLE</h3>
-    <p style="font-size:0.7rem; color:#888;">Level Select</p>
+    <h3>DEV CONSOLE</h3>
+    <p style="font-size:0.7rem; color:#888;">Level Warp</p>
     <div class="dev-grid">
       <button class="dev-btn" onclick="window.devJump(1)">1</button>
       <button class="dev-btn" onclick="window.devJump(2)">2</button>
@@ -72,15 +72,91 @@
       <button class="dev-btn" onclick="window.devJump(7)">7</button>
       <button class="dev-btn" onclick="window.devJump(8)">8</button>
       <button class="dev-btn" onclick="window.devJump(9)">9</button>
-      <button class="dev-btn" onclick="window.devJump(10)">FINAL</button>
+      <button class="dev-btn" onclick="window.devJump(10)">BOSS 2</button>
     </div>
-    <p style="font-size:0.7rem; color:#888;">Cheats</p>
+    <p style="font-size:0.7rem; color:#888; margin-top:10px;">Powerups</p>
     <div class="row">
       <button class="btn small" onclick="window.devPower('shield')">+ Shield</button>
       <button class="btn small" onclick="window.devPower('laser')">+ Laser</button>
-      <button class="btn small" onclick="window.devPower('jetpack')">+ Jetpack</button>
+      <button class="btn small" onclick="window.devPower('jetpack')">+ Jet</button>
     </div>
     <button class="btn secondary close-btn" style="margin-top:15px;">CLOSE</button>
+  </div>
+</div>
+
+<div id="wardrobe-popup" class="popup hidden">
+  <div class="panel wide">
+    <h3>Wardrobe</h3>
+    <div id="player-preview"></div>
+    <div class="wardrobe-tabs">
+      <button class="wardrobe-tab active" data-tab="appearance">Gear</button>
+      <button class="wardrobe-tab" data-tab="skins">Skins</button>
+    </div>
+    
+    <div id="appearance-tab" class="wardrobe-tab-content active scroll-col">
+      <div class="field">
+        <label>Name</label> <input id="player-name-input" type="text" maxlength="12">
+      </div>
+      <div class="field"><label>Gender</label>
+        <div id="gender-options" class="gender-options">
+          <button class="btn gender-btn" data-gender="m">Male</button>
+          <button class="btn gender-btn" data-gender="f">Female</button>
+          <button class="btn gender-btn" data-gender="o">Other</button>
+        </div>
+      </div>
+      <div class="field"><label>Hair</label><div id="hairstyle-options" class="item-row"></div></div>
+      <div class="field"><label>Skin</label><div id="skin-tone-row" class="color-options"></div></div>
+      <div class="field"><label>Shirt</label><div id="shirt-options" class="color-options">
+          <button class="color-swatch" data-color="red" style="background:#ff5a5a"></button>
+          <button class="color-swatch" data-color="blue" style="background:#4ea8ff"></button>
+          <button class="color-swatch" data-color="green" style="background:#37d67a"></button>
+          <button class="color-swatch" data-color="purple" style="background:#a06bff"></button>
+          <button class="color-swatch" data-color="orange" style="background:#ff8d3b"></button>
+          <button class="color-swatch" data-color="teal" style="background:#17c5b6"></button>
+      </div></div>
+      <div class="field"><label>Pants</label><div id="pants-row" class="color-options"></div></div>
+      <div class="field"><label>Item</label><div id="item-row" class="item-row">
+          <button class="item-swatch" data-item="none">None</button>
+          <button class="item-swatch" data-item="sword">Sword</button>
+          <button class="item-swatch" data-item="scepter">Scepter</button>
+          <button class="item-swatch" data-item="mallet">Mallet</button>
+          <button class="item-swatch" data-item="cleaver">Cleaver</button>
+      </div></div>
+    </div>
+
+    <div id="skins-tab" class="wardrobe-tab-content scroll-col">
+      <p class="skins-note">Unlock skins via Achievements.</p>
+      <div id="skins-grid" class="skins-grid"></div>
+      <div class="row" style="margin-top:10px">
+        <button id="clear-skin" class="btn">Reset Skin</button>
+      </div>
+    </div>
+    <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
+  </div>
+</div>
+
+<div id="lore-popup" class="popup hidden">
+  <div class="panel wide">
+    <h3>Lore</h3>
+    <div class="scroll-col">
+      <div class="lore-card">
+        <canvas id="lore-boss1" width="100" height="100"></canvas>
+        <div><strong>Teen Troll</strong><br><small>Queen of Sass. Defeat her by dodging her cringe attacks.</small></div>
+      </div>
+      <div class="lore-card">
+        <canvas id="lore-boss2" width="100" height="100"></canvas>
+        <div><strong>Big Boss Head</strong><br><small>The final corporate overlord. Weak to kindness.</small></div>
+      </div>
+    </div>
+    <button class="btn secondary close-btn">Close</button>
+  </div>
+</div>
+
+<div id="achievements-popup" class="popup hidden">
+  <div class="panel">
+    <h3>Awards</h3>
+    <div id="achievements-grid" class="ach-grid"></div>
+    <button class="btn secondary close-btn">Close</button>
   </div>
 </div>
 
@@ -91,6 +167,15 @@
       <button id="start-at-last" class="btn primary">CHECKPOINT</button>
       <button id="start-beginning" class="btn">NEW RUN</button>
     </div>
+  </div>
+</div>
+
+<div id="share-popup" class="popup hidden">
+  <div class="panel">
+    <h3>Share</h3>
+    <input id="share-link" readonly value="https://codepen.io/Dakota-Weatherhead/full/OPMKVgz">
+    <button id="copy-share-btn" class="btn primary">Copy</button>
+    <button class="btn secondary close-btn">Close</button>
   </div>
 </div>
 
@@ -107,13 +192,40 @@
   </div>
 </div>
 
-<div id="wardrobe-popup" class="popup hidden"><div class="panel"><h3>Wardrobe</h3><div id="player-preview"></div><button id="close-wardrobe" class="btn close-btn">Close</button></div></div>
-<div id="lore-popup" class="popup hidden"><div class="panel"><h3>Lore</h3><canvas id="lore-boss1"></canvas><button class="btn close-btn">Close</button></div></div>
-<div id="achievements-popup" class="popup hidden"><div class="panel"><h3>Awards</h3><div id="achievements-grid"></div><button class="btn close-btn">Close</button></div></div>
-<div id="share-popup" class="popup hidden"><div class="panel"><h3>Share</h3><input id="share-link"><button class="btn close-btn">Close</button></div></div>
-<div id="credits-popup" class="popup hidden"><div class="panel"><h3>Credits</h3><p>Created by Dakota</p><button class="btn close-btn">Close</button></div></div>
-<div id="death-popup" class="popup hidden"><div class="panel"><h3>YOU DIED</h3><button id="death-restart-checkpoint" class="btn primary">Retry</button><button id="death-exit-main" class="btn">Quit</button></div></div>
-<div id="rpg-overlay" class="screen hidden"><div class="rpg-wrap"><div class="boss-head">😈</div><div class="boss-hp"><div id="boss-hp-bar"></div></div><div class="rpg-actions"><button class="btn insult-btn"></button><button class="btn insult-btn"></button><button class="btn insult-btn"></button><button class="btn insult-btn"></button></div><div id="rpg-log" class="rpg-log"></div></div></div>
+<div id="credits-popup" class="popup hidden">
+  <div class="panel">
+    <h3>CREDITS</h3>
+    <p>Design & Code<br>Dakota Weatherhead</p>
+    <hr style="opacity:0.2; margin:10px 0;">
+    <p>Art & Sound<br>Dakota Weatherhead</p>
+    <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
+  </div>
+</div>
+
+<div id="death-popup" class="popup hidden">
+  <div class="panel">
+    <h3>YOU DIED</h3>
+    <div class="row" style="margin-top:15px;">
+      <button id="death-restart-checkpoint" class="btn primary">Retry</button>
+      <button id="death-restart-beginning" class="btn">Restart</button>
+      <button id="death-exit-main" class="btn danger">Quit</button>
+    </div>
+  </div>
+</div>
+
+<div id="rpg-overlay" class="screen hidden">
+  <div class="rpg-wrap">
+    <div class="boss-head">😈</div>
+    <div class="boss-hp"><div id="boss-hp-bar"></div></div>
+    <div class="rpg-actions">
+      <button class="btn insult-btn">...</button>
+      <button class="btn insult-btn">...</button>
+      <button class="btn insult-btn">...</button>
+      <button class="btn insult-btn">...</button>
+    </div>
+    <div id="rpg-log" class="rpg-log"></div>
+  </div>
+</div>
 
 </body>
 </html>
