@@ -1279,12 +1279,12 @@
       "Bro wrote Sweetaria in Notepad."
     ];
     const replies = [
-      "Ok but you&rsquo;re still here playing.",
-      "Wild talk from someone with 0 XP.",
-      "Say &ldquo;skill issue&rdquo; again but slower.",
-      "You ratioed yourself, champ.",
-      "Keep coping, the HP bar disagrees."
-    ];
+  "Ok but you're still here playing.",
+  "Wild talk from someone with 0 XP.",
+  "Say 'skill issue' again but slower.",
+  "You ratioed yourself, champ.",
+  "Keep coping, the HP bar disagrees."
+];
 
     const logEl = qs('#rpg-log');
     const bar = qs('#boss-hp-bar');
