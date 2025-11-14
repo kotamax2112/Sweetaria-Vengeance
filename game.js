@@ -1,7 +1,7 @@
 /* =========================================================
-   SWEETARIA: VENGEANCE — BETA 1.9 (Restoration Build)
-   - Fixed: Black Screen, Wardrobe, Dev Menu, Lore Art
-   - Added: Share Reward, Hair Animation
+   SWEETARIA: VENGEANCE — BETA 2.0 (Full Restoration)
+   - Fixed: Black Screen, All Wardrobe, All Menus
+   - Added: SNES Lore Art, Share Reward, Hair Animation
    ========================================================= */
 (() => {
   'use strict';
@@ -12,7 +12,7 @@
   const clamp = (v, l, h) => Math.max(l, Math.min(h, v));
   const randRange = (a, b) => a + Math.random() * (b - a);
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  const $ = (id) => document.getElementById(id); // Easy access
+  const $ = (id) => document.getElementById(id);
 
   // --- AUDIO ENGINE ---
   let actx, musInt;
@@ -48,7 +48,7 @@
 
   // --- PIXEL ART (SNES Style) ---
   const ART = {
-    // 0=Empty, 1=Skin, 2=BlondeHair, 3=Gap, 4=BlueCoat, 5=White, 6=BlackEye, 7=Phone, 8=PhoneScreen
+    // 0=Empty, 1=Skin, 2=Blonde, 3=Gap, 4=BlueCoat, 5=White, 6=BlackEye, 7=Phone, 8=PhoneScreen
     troll: [
       "00000002222222200000",
       "00000222222222222000",
@@ -61,13 +61,13 @@
       "00000044444444444000",
       "00000044555555544000",
       "00000044555555544000",
-      "00000444555555544400",
-      "00000444555555544400",
       "00000444555555544477", // Holding Phone
       "00000444555555544488",
-      "00000000000000000077"
+      "00000444555555544488",
+      "00000444555555544477",
+      "00000000000000000000"
     ],
-    // 0=Empty, 5=SkinTone, 4=WhiteEye, 6=BlackPupil, 9=GrayHair
+    // 0=Empty, 1=Skin, 4=WhiteEye, 6=BlackPupil, 9=GrayHair
     head: [
       "00000000099999900000",
       "00000009999999900000",
@@ -146,7 +146,7 @@
     if(!cvs) return console.error("FATAL: No Canvas");
     SV.ctx = cvs.getContext('2d');
 
-    // Global click to unlock audio
+    // --- GLOBAL CLICK (Unlock Audio) ---
     const unlockAudio = () => {
       Sound.init();
       if(SV.settings.music) Sound.startMusic();
@@ -154,13 +154,12 @@
     };
     document.addEventListener('pointerdown', unlockAudio);
 
-    // Title
+    // --- BUTTON BINDINGS ---
     qs('#title-screen').onclick = () => {
       qs('#title-screen').classList.add('hidden');
       qs('#home-screen').classList.remove('hidden');
     };
 
-    // --- BUTTON BINDINGS ---
     qs('#play-btn').onclick = () => startRun(SV.progress.lastCheckpoint > 1 ? 'popup' : 1);
     qs('#endless-btn').onclick = () => {
       if(SV.progress.endlessUnlocked) startRun(99);
@@ -181,7 +180,7 @@
     qs('#start-at-last').onclick = () => { closePopup('start-popup'); startRun(SV.progress.lastCheckpoint||1); };
     qs('#start-beginning').onclick = () => { closePopup('start-popup'); startRun(1); };
 
-    // Toggles
+    // --- TOGGLES ---
     const updSet = () => {
       ['#music-toggle', '#pause-music-btn'].forEach(id => qs(id).textContent = `Music: ${SV.settings.music?'ON':'OFF'}`);
       ['#sfx-toggle', '#pause-sfx-btn'].forEach(id => qs(id).textContent = `SFX: ${SV.settings.sfx?'ON':'OFF'}`);
@@ -193,16 +192,16 @@
     qs('#sfx-toggle').onclick = toggleSfx; qs('#pause-sfx-btn').onclick = toggleSfx;
     qs('#reset-progress-btn').onclick = () => { if(confirm("Reset All Data?")) { localStorage.clear(); location.reload(); } };
 
-    // Pause
+    // --- PAUSE ---
     qs('#pause-btn').onclick = () => { SV.paused = true; openPopup('pause-menu'); };
     qs('#resume-btn').onclick = () => { closePopup('pause-menu'); SV.paused = false; SV.lastTs = performance.now(); loop(); };
     qs('#quit-btn').onclick = () => location.reload();
     
-    // Death
+    // --- DEATH ---
     qs('#death-restart-checkpoint').onclick = () => { closePopup('death-popup'); startRun(SV.progress.lastCheckpoint || 1); };
     qs('#death-exit-main').onclick = () => location.reload();
 
-    // Controls
+    // --- CONTROLS ---
     const jump = (e) => { 
       if(!SV.running || SV.paused) return;
       if(e.type==='keydown' && e.code!=='Space') return;
@@ -212,7 +211,7 @@
     };
     qs('#jump-btn').onpointerdown = jump; window.onkeydown = jump; qs('#game-canvas').onpointerdown = jump;
 
-    // Dev Menu
+    // --- DEV MENU ---
     qs('#dev-trigger-zone').addEventListener('pointerdown', () => {
       SV.devClicks++; console.log("DevTap:", SV.devClicks);
       setTimeout(() => SV.devClicks = 0, 2000);
@@ -257,8 +256,8 @@
   }
 
   function loop(ts){
-    if(!SV.running) return;
-    if(SV.paused) { requestAnimationFrame(loop); return; }
+    if(!SV.running) return; // Stop if not running
+    if(SV.paused) { requestAnimationFrame(loop); return; } // Pause
     
     const dt = ts - SV.lastTs || 16; SV.lastTs = ts;
     
@@ -467,7 +466,7 @@
     render();
   }
 
-  // --- LORE (Detailed Art) ---
+  // --- LORE (SNES Art) ---
   function drawPixelArt(ctx, map, size){
     map.forEach((row, y) => {
       [...row].forEach((char, x) => {
