@@ -28,7 +28,8 @@ hr{ border:0; border-top:1px solid var(--border); opacity:0.5; margin:10px 0; }
   border:1px solid var(--border); border-radius:8px; cursor:pointer;
   display:flex; justify-content:center; align-items:center; font-size:1.2rem;
 }
-.settings-pos{ position:absolute; top:16px; left:16px; z-index:10; }
+/* --- FIX: Moved settings button to right & fixed z-index --- */
+.settings-pos{ position:absolute; top:16px; right:16px; left:auto; z-index:101; }
 .pause-pos{ position:absolute; top:60px; right:16px; z-index:10; }
 
 /* Title */
@@ -87,7 +88,17 @@ hr{ border:0; border-top:1px solid var(--border); opacity:0.5; margin:10px 0; }
   padding:5px; cursor:pointer; font-size:0.7rem; text-align:center;
 }
 .skin-card.locked, .achievement-tile.locked{ opacity:0.5; filter:grayscale(1); }
-.skin-card.selected, .achievement-tile.unlocked{ border-color:var(--primary); box-shadow:0 0 10px var(--primary); }
+.skin-card.selected{ box-shadow:0 0 10px var(--primary); border-width: 3px; }
+.achievement-tile.unlocked{ border-color:var(--primary); }
+
+/* --- NEW: Rarity Borders --- */
+.skin-card.rare { border-color: #4e9cff; }
+.skin-card.epic { border-color: #a06bff; }
+.skin-card.legendary { border-color: #ff8d3b; }
+.skin-card.selected.rare { box-shadow:0 0 10px #4e9cff; }
+.skin-card.selected.epic { box-shadow:0 0 10px #a06bff; }
+.skin-card.selected.legendary { box-shadow:0 0 10px #ff8d3b; }
+
 
 /* Lore */
 .lore-card{ display:grid; grid-template-columns:128px 1fr; gap:15px; text-align:left; background:#151b2e; padding:10px; border-radius:8px; margin-bottom:10px; align-items:center; }
