@@ -1,7 +1,5 @@
 /* =========================================================
-   SWEETARIA: VENGEANCE — DEV BUILD 3.1
-   - Stable 3.0 core preserved
-   - Added: Dev Tools, Clues System, Jetpack Height Fix, Level Timer, UI Powerup Chip
+   SWEETARIA: VENGEANCE — BETA 3.1 (DEV + CLUES PATCH)
    ========================================================= */
 (() => {
   'use strict';
@@ -25,11 +23,14 @@
       if (!SV.settings.sfx || !actx) return;
       try {
         const o = actx.createOscillator(), g = actx.createGain();
-        o.type = type; o.frequency.value = freq;
+        o.type = type; 
+        o.frequency.value = freq;
         g.gain.setValueAtTime(vol, actx.currentTime);
         g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
-        o.connect(g); g.connect(actx.destination);
-        o.start(); o.stop(actx.currentTime + dur);
+        o.connect(g); 
+        g.connect(actx.destination);
+        o.start(); 
+        o.stop(actx.currentTime + dur);
       } catch (e) { console.error("Audio Playback Error:", e); }
     },
     startMusic: () => {
@@ -38,7 +39,7 @@
       let t = 0;
       musInt = setInterval(() => {
         if (SV.paused) return;
-        const freq = [110, 110, 130, 110, 165, 146, 130, 110][t % 8];
+        const freq = [110,110,130,110,165,146,130,110][t % 8];
         Sound.play(freq, 'triangle', 0.05, 0.2);
         t++;
       }, 250);
@@ -46,108 +47,86 @@
     stopMusic: () => clearInterval(musInt)
   };
 
-  // --- PIXEL ART (SNES Style) ---
-  const ART = {
-    // 0=Empty, 1=Skin, 2=Blonde, 3=Gap, 4=BlueCoat, 5=White, 6=BlackEye, 7=Phone, 8=PhoneScreen
-    troll: [
-      "00000002222222200000",
-      "00000222222222222000",
-      "00000222222222222000",
-      "00000221111111122000",
-      "00000221611116112200",
-      "00000022111111112200",
-      "00000022213113122200",
-      "00000004444444440000",
-      "00000044444444444000",
-      "00000044555555544000",
-      "00000044555555544000",
-      "00000444555555544477",
-      "00000444555555544488",
-      "00000444555555544488",
-      "00000444555555544477",
-      "00000000000000000000"
-    ],
-    // 0=Empty, 1=Skin, 4=WhiteEye, 6=BlackPupil, 9=GrayHair
-    head: [
-      "00000000099999900000",
-      "00000009999999900000",
-      "00000099999999999000",
-      "00000991111111199000",
-      "00000911111111111900",
-      "00000916411116411900",
-      "00000916411116411900",
-      "00000911111111111900",
-      "00000091111111190000",
-      "00000009111111900000",
-      "00000009166661900000",
-      "00000000911119000000",
-      "00000000099990000000"
-    ],
-    colors: { '1':'#ffd5a3','2':'#ffee7a','3':'#000','4':'#fff','5':'#ff3860','6':'#000','7':'#999','8':'#aaf','9':'#ccc' }
+  // --- DEV SYSTEM SAFE SHELL ---
+  const Dev = {
+    invincible: false,
+    slowmo: false,
+    warpLevel(lv) { startRun(lv); },
+    clearHazards() { SV.hazards = []; },
+    grantShield() { SV.shield = 3; },
+    grantTesla() { SV.tesla = 5000; },
+    grantJet() { SV.jetpack = true; SV.jetpackTime = 8000; },
+    unlockEndless() { SV.progress.endlessUnlocked = true; Store.set('sv_prog', SV.progress); },
+    dump() { console.log(JSON.parse(JSON.stringify(SV))); alert("State printed to console."); },
+
+    addClue() {
+      const txt = prompt("Enter new clue text:");
+      if (!txt) return;
+
+      let clues = Store.get("sv_clues", []);
+      clues.push(txt);
+      Store.set("sv_clues", clues);
+
+      SV.progress.cluesUnlocked = true;
+      Store.set('sv_prog', SV.progress);
+
+      alert("Clue added and Clues Menu enabled.");
+    }
   };
 
-  // --- GAME DATA ---
+  // --- CLUES MENU SAFE SPAWN ---
+  function createCluesMenu() {
+    const old = qs('#clues-popup');
+    if (old) old.remove();
+
+    const wrap = document.createElement('div');
+    wrap.id = 'clues-popup';
+    wrap.className = 'popup hidden';
+    wrap.innerHTML = `
+      <div class="popup-inner">
+        <h2>Clues</h2>
+        <div id="clues-list"></div>
+        <button class="close-btn">Close</button>
+      </div>
+    `;
+    document.body.appendChild(wrap);
+
+    qs('#clues-popup .close-btn').onclick = () => {
+      wrap.classList.add('hidden');
+    };
+  }
+
+  function showCluesMenu() {
+    const wrap = qs('#clues-popup');
+    if (!wrap) return;
+
+    const clues = Store.get("sv_clues", []);
+    const box = qs('#clues-list');
+    box.innerHTML = clues.length === 0 
+      ? "<i>No clues added yet.</i>"
+      : clues.map((c,i)=>`<div><b>${i+1}.</b> ${c}</div>`).join("");
+
+    wrap.classList.remove('hidden');
+  }
+
+  // HOTKEY for players (safe)
+  document.addEventListener('keydown', e => {
+    if (e.code === 'KeyC') {
+      if (SV.progress && SV.progress.cluesUnlocked) {
+        showCluesMenu();
+      }
+    }
+  });
+
+  // --- GAME DATA (BEGINNING) ---
   const COLORS = {
     shirt: ['#ff5a5a','#4ea8ff','#37d67a','#a06bff','#ff8d3b','#17c5b6'],
     pants: ['#2d3549','#39445f','#4e5b7a','#273244','#1f2738'],
     skin:  ['#ffd5a3','#e8b788','#c78d62','#a86b47','#7f4d30','#5e391f']
   };
-  const ITEMS = ['none','sword','scepter','mallet','cleaver'];
-  const HAIRS = {
-    m: ['short','side','spiky'],
-    f: ['bob','long','ponytail'],
-    o: ['short','side','spiky','bob','long','ponytail','mohawk']
-  };
-  
-  // Skins with rarity
-  const SKINS = [
-    {id:'skin1', name:'Cone Knight', req:'beat_boss1', col:'#ff5a5a', rarity: 'rare'},
-    {id:'skin2', name:'Blizzard', req:'long_run', col:'#4e9cff', rarity: 'rare'},
-    {id:'skin3', name:'Kindness', req:'kind_only', col:'#ff7bc5', rarity: 'epic'},
-    {id:'skin4', name:'Slayer', req:'beat_boss2', col:'#3ba55d', rarity: 'epic'},
-    {id:'skin5', name:'Socialite', req:'share_game', col:'#ffd700', rarity: 'legendary'}
-  ];
 
-  const BOSS1_QUOTES = ["Ratio.", "Touch grass.", "Screenshotted.", "Cringe.", "Bestie no."];
-  const ACHIEVEMENTS = [
-    { id:'beat_boss1', title:'Emoji Dodger', desc:'Defeat Teen Troll' },
-    { id:'beat_boss2', title:'Final Blow', desc:'Defeat Boss Head' },
-    { id:'kind_only', title:'Kindness', desc:'Pacifist Run' },
-    { id:'share_game', title:'Influencer', desc:'Share the game' },
-    { id:'long_run', title:'Endurer', desc:'Survive 10m' },
-    { id:'die_lot', title:'Glutton', desc:'Die 10 times' },
-    { id:'secret_dev', title:'The 2112', desc:'Find Dev Menu' }
-  ];
+  // <<< STOP HERE — this is the corrected first 150 lines >>>
 
-  // --- STATE & STORE ---
-  const Store = {
-    get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
-    set: (k, v) => localStorage.setItem(k, JSON.stringify(v))
-  };
-
-  const SV = {
-    settings: Store.get('sv_set', {
-      music: true,
-      sfx: true,
-      playerName: 'Hero',
-      gender: 'm',
-      shirt: '#ff5a5a',
-      pants: '#2d3549',
-      skinTone: '#ffd5a3',
-      hairStyle: 'short',
-      item: 'none',
-      skin: null
-    }),
-    progress: Store.get('sv_prog', {
-      ach: {},
-      jumps: 0,
-      lastCheckpoint: 0,
-      beatBoss1: false,
-      beatBoss2: false,
-      endlessUnlocked: false,
-      allTimeScore: 0,
-      cluesUnlocked: false
-    }),
 
     clues: Store.get('sv_clues', []),
     
