@@ -9,7 +9,6 @@
 </head>
 <body>
 
-<!-- TITLE SCREEN -->
 <div id="title-screen" class="screen">
   <div id="title-bg"><div class="flame"></div></div>
   <div class="title-content">
@@ -18,9 +17,8 @@
   </div>
 </div>
 
-<!-- HOME SCREEN -->
 <div id="home-screen" class="screen hidden">
-  <!-- Settings is Top Left -->
+  <div id="dev-trigger"></div> 
   <button id="settings-btn" class="icon-btn settings-pos">⚙️</button>
   
   <h2 class="home-title">MAIN MENU</h2>
@@ -34,12 +32,8 @@
     <button id="share-btn" class="btn secondary">SHARE</button>
     <button id="return-title-btn" class="btn danger">LOGOUT</button>
   </div>
-  
-  <!-- Invisible Dev Trigger Area (Top Right) -->
-  <div id="dev-trigger"></div>
 </div>
 
-<!-- GAME SCREEN -->
 <div id="game-screen" class="screen hidden">
   <div id="top-ui">
     <div class="ui-row">
@@ -50,87 +44,54 @@
       <span>Score: <b id="score-display">0</b></span>
       <span>Best: <b id="alltime-display">0</b></span>
     </div>
-    <div id="powerup-indicator" class="hidden"></div>
+    <span id="powerup-indicator" class="hidden"></span>
   </div>
   
-  <div id="level-progress-wrap">
-    <div id="level-progress-fill"></div>
-  </div>
+  <div id="level-progress-wrap"><div id="level-progress-fill"></div></div>
   
   <button id="pause-btn" class="icon-btn pause-pos">II</button>
   
-  <!-- The Game World -->
   <canvas id="game-canvas" width="800" height="480"></canvas>
   
   <button id="jump-btn" class="jump-btn">JUMP</button>
 </div>
 
-<!-- WARDROBE MENU -->
 <div id="wardrobe-popup" class="popup hidden">
   <div class="panel wide">
     <h3>WARDROBE</h3>
-    
     <div id="player-preview"></div>
     
     <div class="wardrobe-tabs">
-      <button id="tab-gear" class="wardrobe-tab active">GEAR</button>
-      <button id="tab-skins" class="wardrobe-tab">SKINS</button>
+      <button id="tab-gear" class="wardrobe-tab active" data-tab="content-gear">Gear</button>
+      <button id="tab-skins" class="wardrobe-tab" data-tab="content-skins">Skins</button>
     </div>
     
-    <!-- GEAR CONTENT -->
     <div id="content-gear" class="wardrobe-content active scroll-col">
-      <div class="field">
-        <label>Name</label>
-        <input id="player-name-input" type="text" maxlength="12" placeholder="Hero">
-      </div>
-      
-      <div class="field">
-        <label>Gender</label>
+      <div class="field"><label>Name</label><input id="player-name-input" type="text" maxlength="12"></div>
+      <div class="field"><label>Gender</label>
         <div class="gender-options">
-          <button class="gender-btn" data-gender="m">Male</button>
-          <button class="gender-btn" data-gender="f">Female</button>
-          <button class="gender-btn" data-gender="o">Other</button>
+          <button class="btn gender-btn active" data-gender="m">Male</button>
+          <button class="btn gender-btn" data-gender="f">Female</button>
+          <button class="btn gender-btn" data-gender="o">Other</button>
         </div>
       </div>
-
-      <div class="field">
-        <label>Hair Style</label>
-        <div id="hair-options" class="item-row"></div>
-      </div>
-      
-      <div class="field">
-        <label>Skin Tone</label>
-        <div id="skin-options" class="color-options"></div>
-      </div>
-      
-      <div class="field">
-        <label>Shirt Color</label>
-        <div id="shirt-options" class="color-options"></div>
-      </div>
-      
-      <div class="field">
-        <label>Pants Color</label>
-        <div id="pants-options" class="color-options"></div>
-      </div>
-      
-      <div class="field">
-        <label>Held Item</label>
-        <div id="item-options" class="item-row"></div>
-      </div>
+      <div class="field"><label>Hair Style</label><div id="hair-options" class="item-row"></div></div>
+      <div class="field"><label>Skin Tone</label><div id="skin-options" class="color-options"></div></div>
+      <div class="field"><label>Shirt Color</label><div id="shirt-options" class="color-options"></div></div>
+      <div class="field"><label>Pants Color</label><div id="pants-options" class="color-options"></div></div>
+      <div class="field"><label>Held Item</label><div id="item-options" class="item-row"></div></div>
     </div>
 
-    <!-- SKINS CONTENT -->
     <div id="content-skins" class="wardrobe-content scroll-col">
       <p class="skins-note">Unlock skins by completing Awards.</p>
       <div id="skins-grid" class="skins-grid"></div>
-      <button id="clear-skin-btn" class="btn small" style="margin-top:15px;">Reset Skin</button>
+      <button id="clear-skin-btn" class="btn small" style="margin-top:15px;">Unequip Skin</button>
     </div>
     
     <button class="btn secondary close-btn" style="margin-top:15px;">Save & Close</button>
   </div>
 </div>
 
-<!-- LORE MENU -->
 <div id="lore-popup" class="popup hidden">
   <div class="panel wide">
     <h3>LORE</h3>
@@ -138,23 +99,22 @@
       <div class="lore-card">
         <div class="lore-img"><canvas id="lore-canvas-1" width="128" height="128"></canvas></div>
         <div class="lore-text">
-          <strong>Teen Troll</strong><br>
-          <small>Queen of Sass. She fights with apathy and smartphone notifications. Jumping over her attacks deals "Emotional Damage".</small>
+          <strong>The Cell Phone Teen Troll</strong><br>
+          <small style="color:#b8c6e3;">Born from the digital waste of a thousand unread notifications, she haunts the mid-levels of Sweetaria. She does not fight with swords, but with pure, weaponized apathy. Legend says she stared into the abyss of a scrolling feed until the feed stared back. Her primary attack is 'The Ratio'—a devastating beam of negative engagement.</small>
         </div>
       </div>
       <div class="lore-card">
         <div class="lore-img"><canvas id="lore-canvas-2" width="128" height="128"></canvas></div>
         <div class="lore-text">
-          <strong>Big Boss Head</strong><br>
-          <small>The Corporate Overlord. He floats above the law. His only weakness is Kindness, which he finds "disgusting".</small>
+          <strong>The Big Boss Head</strong><br>
+          <small style="color:#b8c6e3;">A manifestation of pure corporate spite. The Big Boss Head floats eternally at the summit of the spire, fueled by the tears of millennials. He possesses no body, for he needs no hands to crush dreams—only policy changes. He believes the world stopped turning in 1985 and that his only weakness is Kindness (which he finds "disgusting").</small>
         </div>
       </div>
     </div>
-    <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
+    <button class="btn secondary close-btn" style="margin-top:10px;">Close</Lbutton>
   </div>
 </div>
 
-<!-- AWARDS MENU -->
 <div id="achievements-popup" class="popup hidden">
   <div class="panel">
     <h3>AWARDS</h3>
@@ -163,7 +123,6 @@
   </div>
 </div>
 
-<!-- SETTINGS MENU -->
 <div id="settings-popup" class="popup hidden">
   <div class="panel">
     <h3>SETTINGS</h3>
@@ -178,22 +137,19 @@
   </div>
 </div>
 
-<!-- CREDITS -->
 <div id="credits-popup" class="popup hidden">
   <div class="panel">
     <h3>CREDITS</h3>
     <div class="scroll-col" style="font-size:0.8rem; line-height:1.6;">
-      <p><strong>Design & Code</strong><br>Dakota Weatherhead</p>
-      <hr style="opacity:0.2; margin:10px 0;">
-      <p><strong>Art & Animation</strong><br>Dakota Weatherhead</p>
-      <hr style="opacity:0.2; margin:10px 0;">
-      <p><strong>Music & SFX</strong><br>Dakota Weatherhead</p>
+      <p><strong>Design & Code</strong><br>Dakota Weatherhead</p> <hr>
+      <p><strong>Art & Animation</strong><br>Dakota Weatherhead</p> <hr>
+      <p><strong>Music & SFX</strong><br>Dakota Weatherhead</p> <hr>
+      <p><strong>Writing</strong><br>Dakota Weatherhead</p>
     </div>
     <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
   </div>
 </div>
 
-<!-- PAUSE MENU -->
 <div id="pause-menu" class="popup hidden">
   <div class="panel">
     <h3>PAUSED</h3>
@@ -207,17 +163,14 @@
   </div>
 </div>
 
-<!-- DEV CONSOLE -->
 <div id="dev-menu" class="popup hidden">
   <div class="panel">
     <h3>DEV CONSOLE</h3>
-    <p style="color:#888; font-size:0.7rem;">Warp</p>
     <div class="dev-grid">
       <button class="dev-btn" onclick="window.devJump(1)">1</button>
       <button class="dev-btn" onclick="window.devJump(5)">BOSS 1</button>
       <button class="dev-btn" onclick="window.devJump(10)">BOSS 2</button>
     </div>
-    <p style="color:#888; font-size:0.7rem; margin-top:10px;">Cheats</p>
     <div class="row">
       <button class="btn small" onclick="window.devPower('shield')">Shield</button>
       <button class="btn small" onclick="window.devPower('tesla')">Tesla</button>
@@ -227,7 +180,6 @@
   </div>
 </div>
 
-<!-- SHARE POPUP -->
 <div id="share-popup" class="popup hidden">
   <div class="panel">
     <h3>SHARE</h3>
@@ -238,7 +190,6 @@
   </div>
 </div>
 
-<!-- GAMEPLAY OVERLAYS -->
 <div id="start-popup" class="popup hidden"><div class="panel"><h3>CONTINUE?</h3><button id="start-at-last" class="btn primary">Checkpoint</button><button id="start-beginning" class="btn">New Run</button></div></div>
 <div id="death-popup" class="popup hidden"><div class="panel"><h3>YOU DIED</h3><button id="death-restart-checkpoint" class="btn primary">Retry</button><button id="death-exit-main" class="btn danger">Quit</button></div></div>
 <div id="rpg-overlay" class="screen hidden"><div class="rpg-wrap"><div class="boss-head">😈</div><div class="boss-hp"><div id="boss-hp-bar"></div></div><div class="rpg-actions"><button class="btn insult-btn"></button><button class="btn insult-btn"></button><button class="btn insult-btn"></button><button class="btn insult-btn"></button></div><div id="rpg-log" class="rpg-log"></div></div></div>
