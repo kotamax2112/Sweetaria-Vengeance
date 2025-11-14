@@ -253,6 +253,7 @@
     SV.rpg.active = false;
 
     SV.running=true; SV.paused=false; SV.lastTs=performance.now();
+    loop(); // <-- **FIX**: Start the game loop
   }
 
   function loop(ts){
@@ -299,7 +300,7 @@
     if(Math.random()<0.005) SV.powerups.push({x:850, y:200, w:40, h:40, type:pick(['shield','tesla','jetpack'])});
 
     SV.hazards.forEach(h => h.x -= 0.34*dt);
-    SV.powers.forEach(p => p.x -= 0.34*dt);
+    SV.powerups.forEach(p => p.x -= 0.34*dt); // <-- **FIX**: Was 'SV.powers'
 
     SV.hazards.forEach((h,i) => {
       if(rectHit(p.x,p.y,p.w,p.h, h.x,h.y,h.w,h.h)){
@@ -307,9 +308,9 @@
         else { SV.running=false; onPlayerDeath(); }
       }
     });
-    SV.powers.forEach((pw,i) => {
+    SV.powerups.forEach((pw,i) => { // <-- **FIX**: Was 'SV.powers'
       if(rectHit(p.x,p.y,p.w,p.h, pw.x,pw.y,40,40)){
-        SV.powers.splice(i,1); Sound.play(600,'sine');
+        SV.powerups.splice(i,1); Sound.play(600,'sine'); // <-- **FIX**: Was 'SV.powers'
         if(pw.type==='shield') SV.shield=3;
         if(pw.type==='tesla') SV.tesla=5000;
         if(pw.type==='jetpack') { SV.jetpack=true; SV.jetpackTime=8000; }
@@ -352,7 +353,7 @@
       }
     });
 
-    SV.powers.forEach(p => {
+    SV.powerups.forEach(p => { // <-- **FIX**: Was 'SV.powers'
       ctx.shadowBlur=15; ctx.shadowColor='#fff';
       ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(p.x+20,p.y+20,20,0,7); ctx.fill();
       ctx.shadowBlur=0;
@@ -449,6 +450,7 @@
     refreshHair();
 
     qsa('.gender-btn').forEach(b => {
+      b.classList.remove('active'); // <-- **FIX**: Ensure only one is active
       if(SV.settings.gender === b.dataset.gender) b.classList.add('active');
       b.onclick = () => { SV.settings.gender = b.dataset.gender; initWardrobe(); };
     });
@@ -456,9 +458,10 @@
     const sg = qs('#skins-grid'); sg.innerHTML='';
     SKINS.forEach(s => {
       const d = document.createElement('div');
-      d.className = `skin-card ${SV.settings.skin===s.id ? 'selected' : ''} ${SV.prog.ach[s.req] ? '' : 'locked'}`;
+      // **FIX**: Changed SV.prog to SV.progress
+      d.className = `skin-card ${SV.settings.skin===s.id ? 'selected' : ''} ${SV.progress.ach[s.req] ? '' : 'locked'}`;
       d.innerHTML = `<b>${s.name}</b>`;
-      if(SV.prog.ach[s.req]) d.onclick = () => { SV.settings.skin = s.id; initWardrobe(); };
+      if(SV.progress.ach[s.req]) d.onclick = () => { SV.settings.skin = s.id; initWardrobe(); }; // <-- **FIX**: Was SV.prog
       sg.appendChild(d);
     });
     
@@ -485,7 +488,7 @@
 
   function buildAch() {
     const grid = qs('#achievements-grid'); grid.innerHTML = '';
-    const have = SV.prog.ach || {};
+    const have = SV.progress.ach || {}; // <-- **FIX**: Was SV.prog
     ACHIEVEMENTS.forEach(a => {
       const div = document.createElement('div');
       div.className = `achievement-tile ${have[a.id] ? 'unlocked' : ''}`;
@@ -494,7 +497,7 @@
     });
   }
 
-  function award(id) { if (!SV.prog.ach[id]) { SV.prog.ach[id] = true; Store.set('sv_prog', SV.prog); } }
+  function award(id) { if (!SV.progress.ach[id]) { SV.progress.ach[id] = true; Store.set('sv_prog', SV.progress); } } // <-- **FIX**: Was SV.prog
   
   function startRpgBoss(){ 
     SV.running=false; SV.rpg.active=true; openPopup('rpg-overlay'); SV.rpg.hp=100; 
@@ -502,7 +505,7 @@
       b.textContent = "Attack"; 
       b.onclick = () => {
         SV.rpg.hp -= 10; qs('#boss-hp-bar').style.width = SV.rpg.hp+'%';
-        if(SV.rpg.hp <= 0) { alert("YOU WON!"); SV.prog.endlessUnlocked=true; Store.set('sv_prog', SV.prog); location.reload(); }
+        if(SV.rpg.hp <= 0) { alert("YOU WON!"); SV.progress.endlessUnlocked=true; Store.set('sv_prog', SV.progress); location.reload(); }
       };
     });
   }
