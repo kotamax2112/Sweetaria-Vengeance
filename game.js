@@ -12,7 +12,7 @@
   const clamp = (v, l, h) => Math.max(l, Math.min(h, v));
   const randRange = (a, b) => a + Math.random() * (b - a);
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  const $ = (id) => document.getElementById(id);
+  const $ = (id) => document.getElementById(id); // Easy access
 
   // --- AUDIO ENGINE ---
   let actx, musInt;
@@ -23,12 +23,14 @@
     },
     play: (freq, type, vol = 0.1, dur = 0.3) => {
       if (!SV.settings.sfx || !actx) return;
-      const o = actx.createOscillator(), g = actx.createGain();
-      o.type = type; o.frequency.value = freq;
-      g.gain.setValueAtTime(vol, actx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
-      o.connect(g); g.connect(actx.destination);
-      o.start(); o.stop(actx.currentTime + dur);
+      try {
+        const o = actx.createOscillator(), g = actx.createGain();
+        o.type = type; o.frequency.value = freq;
+        g.gain.setValueAtTime(vol, actx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + dur);
+        o.connect(g); g.connect(actx.destination);
+        o.start(); o.stop(actx.currentTime + dur);
+      } catch (e) { console.error("Audio Playback Error:", e); }
     },
     startMusic: () => {
       if (musInt) clearInterval(musInt);
@@ -55,33 +57,33 @@
       "00000221611116112200",
       "00000022111111112200",
       "00000022213113122200", // Gapped teeth
-      "00000003333333330000",
-      "00000033333333333000",
-      "00000033444444433000",
-      "00000033444444433000",
-      "00000333444444433377", // Holding Phone
-      "00000333444444433388",
-      "00000333444444433388",
-      "00000333444444433377",
-      "00000000000000000000"
+      "00000004444444440000",
+      "00000044444444444000",
+      "00000044555555544000",
+      "00000044555555544000",
+      "00000444555555544400",
+      "00000444555555544400",
+      "00000444555555544477", // Holding Phone
+      "00000444555555544488",
+      "00000000000000000077"
     ],
-    // 0=Empty, 5=RedSkin, 4=WhiteEye, 6=BlackPupil, 9=GrayHair
+    // 0=Empty, 5=SkinTone, 4=WhiteEye, 6=BlackPupil, 9=GrayHair
     head: [
       "00000000099999900000",
       "00000009999999900000",
       "00000099999999999000",
-      "00000995555555599000",
-      "00000955555555555900",
-      "00000956455556455900",
-      "00000956455556455900",
-      "00000955555555555900",
-      "00000095555555590000",
-      "00000009555555900000",
-      "00000009566665900000",
-      "00000000955559000000",
+      "00000991111111199000",
+      "00000911111111111900",
+      "00000916411116411900", // Eyes
+      "00000916411116411900",
+      "00000911111111111900",
+      "00000091111111190000",
+      "00000009111111900000",
+      "00000009166661900000", // Mouth
+      "00000000911119000000",
       "00000000099990000000"
     ],
-    colors: { '1':'#ffd5a3','2':'#ffee7a','3':'#5e6c8c','4':'#fff','5':'#ff3860','6':'#000','7':'#999','8':'#aaf','9':'#ccc' }
+    colors: { '1':'#ffd5a3','2':'#ffee7a','3':'#000','4':'#fff','5':'#ff3860','6':'#000','7':'#999','8':'#aaf','9':'#ccc' }
   };
 
   // --- GAME DATA ---
@@ -158,7 +160,7 @@
       qs('#home-screen').classList.remove('hidden');
     };
 
-    // Home
+    // --- BUTTON BINDINGS ---
     qs('#play-btn').onclick = () => startRun(SV.progress.lastCheckpoint > 1 ? 'popup' : 1);
     qs('#endless-btn').onclick = () => {
       if(SV.progress.endlessUnlocked) startRun(99);
@@ -169,17 +171,15 @@
     qs('#achievements-btn').onclick = () => { buildAch(); openPopup('achievements-popup'); };
     qs('#share-btn').onclick = () => openPopup('share-popup');
     qs('#settings-btn').onclick = () => openPopup('settings-popup');
-    qs('#return-title-btn').onclick = () => location.reload();
-
-    // Popups
-    qs('#start-at-last').onclick = () => { closePopup('start-popup'); startRun(SV.progress.lastCheckpoint||1); };
-    qs('#start-beginning').onclick = () => { closePopup('start-popup'); startRun(1); };
     qs('#open-credits-btn').onclick = () => { closePopup('settings-popup'); openPopup('credits-popup'); };
+    qs('#return-title-btn').onclick = () => location.reload();
     qs('#copy-share-btn').onclick = () => {
       navigator.clipboard.writeText(qs('#share-link').value);
       alert("Link Copied! 'Socialite' Skin Unlocked.");
       award('share_game');
     };
+    qs('#start-at-last').onclick = () => { closePopup('start-popup'); startRun(SV.progress.lastCheckpoint||1); };
+    qs('#start-beginning').onclick = () => { closePopup('start-popup'); startRun(1); };
 
     // Toggles
     const updSet = () => {
@@ -244,7 +244,7 @@
   // --- GAME LOOP ---
   function startRun(lv){
     if(lv==='popup'){ openPopup('start-popup'); return; }
-    ['home-screen', 'start-popup', 'death-popup', 'rpg-overlay'].forEach(id => qs('#'s + id).classList.add('hidden'));
+    ['home-screen', 'start-popup', 'death-popup', 'rpg-overlay'].forEach(id => qs('#' + id).classList.add('hidden'));
     qs('#game-screen').classList.remove('hidden');
 
     SV.level=lv; SV.score=0; SV.hazards=[]; SV.powerups=[]; SV.particles=[];
@@ -276,19 +276,16 @@
     qs('#alltime-display').textContent = Math.floor(SV.progress.allTimeScore || 0);
     if(SV.score > (SV.progress.allTimeScore||0)) { SV.progress.allTimeScore = SV.score; Store.set('sv_prog', SV.progress); }
 
-    // Powerups
     const pInd = qs('#powerup-indicator');
     if(SV.tesla>0) { SV.tesla-=dt; pInd.textContent="⚡ TESLA"; pInd.classList.remove('hidden'); }
     else if(SV.jetpack) { SV.jetpackTime-=dt; if(SV.jetpackTime<=0) SV.jetpack=false; pInd.textContent="🚀 JET"; pInd.classList.remove('hidden'); }
     else pInd.classList.add('hidden');
 
-    // Tesla
     if(SV.tesla > 0){
       const target = SV.hazards.find(h => h.x > SV.player.x && h.x < SV.player.x + 400);
       if(target){ target.zapped = true; SV.hazards = SV.hazards.filter(h => h !== target); Sound.play(600, 'sawtooth', 0.1); }
     }
 
-    // Physics
     const p = SV.player;
     if(SV.jetpack) { p.vy=0; p.y=200+Math.sin(Date.now()*0.005)*10; p.onGround=false; }
     else {
@@ -296,17 +293,15 @@
       if(p.y >= 296) { p.y=296; p.vy=0; p.onGround=true; p.jumpsUsed=0; }
     }
 
-    // Spawning
     if(Math.random()<0.015) {
       const type = Math.random()>0.7 ? 'mine' : 'slime';
-      SV.hazards.push({x:850, y:type==='mine'?230:296, w:36, h:36, type}); // Slime Y fixed to 296
+      SV.hazards.push({x:850, y:type==='mine'?230:296, w:36, h:36, type});
     }
     if(Math.random()<0.005) SV.powerups.push({x:850, y:200, w:40, h:40, type:pick(['shield','tesla','jetpack'])});
 
     SV.hazards.forEach(h => h.x -= 0.34*dt);
     SV.powers.forEach(p => p.x -= 0.34*dt);
 
-    // Collisions
     SV.hazards.forEach((h,i) => {
       if(rectHit(p.x,p.y,p.w,p.h, h.x,h.y,h.w,h.h)){
         if(SV.shield>0 || SV.jetpack) { SV.shield--; SV.hazards.splice(i,1); }
@@ -333,9 +328,8 @@
 
   // --- DRAWING ---
   function draw(){
-    if(!SV.ctx) return; // Safety check
+    if(!SV.ctx) return;
     const ctx = SV.ctx; ctx.clearRect(0,0,800,480);
-    // Alpha Background
     const t = performance.now()*0.00005;
     const g = ctx.createLinearGradient(0,0,0,480);
     g.addColorStop(0, '#060914'); g.addColorStop(0.5, '#081021'); g.addColorStop(1, '#05060b');
@@ -354,8 +348,8 @@
           ctx.beginPath(); ctx.moveTo(h.x+18,h.y+18); ctx.lineTo(h.x+18+Math.cos(a)*25, h.y+18+Math.sin(a)*25); ctx.stroke();
         }
       } else {
-        ctx.fillStyle='#0f0'; ctx.beginPath(); ctx.arc(h.x+18,h.y+18,18,0,7); ctx.fill(); // Full circle slime
-        ctx.fillStyle='#000'; ctx.fillRect(h.x+8,h.y+10,6,6); ctx.fillRect(h.x+22,h.y+10,6,6); // Eyes
+        ctx.fillStyle='#0f0'; ctx.beginPath(); ctx.arc(h.x+18,h.y+18,18,0,7); ctx.fill();
+        ctx.fillStyle='#000'; ctx.fillRect(h.x+8,h.y+10,6,6); ctx.fillRect(h.x+22,h.y+10,6,6);
       }
     });
 
@@ -372,8 +366,8 @@
     drawPlayerSprite(ctx, SV.player.x, SV.player.y);
 
     if(SV.tesla>0 && SV.hazards.length>0){
-      const t = SV.hazards[0];
-      if(t.x < 600 && t.x > SV.player.x){
+      const t = SV.hazards.find(h => h.x > SV.player.x && h.x < SV.player.x + 400);
+      if(t){
         ctx.strokeStyle='#0ff'; ctx.lineWidth=3; ctx.beginPath();
         ctx.moveTo(SV.player.x+20, SV.player.y+30);
         ctx.lineTo(t.x+18, t.y+18);
@@ -408,7 +402,7 @@
     else if(s.item === 'cleaver') { ctx.fillRect(x+45,y+20,4,15); ctx.fillRect(x+38,y+15,20,10); }
   }
 
-  // --- WARDROBE ---
+  // --- WARDROBE (Fixed) ---
   function initWardrobe(){
     const cvs = document.createElement('canvas'); cvs.width=300; cvs.height=180;
     qs('#player-preview').innerHTML=''; qs('#player-preview').appendChild(cvs);
@@ -418,7 +412,7 @@
     qs('#player-name-input').value = SV.settings.name;
     qs('#player-name-input').onchange = (e) => SV.settings.name = e.target.value;
 
-    // Tabs
+    // TABS
     qsa('.wardrobe-tab').forEach(t => t.onclick = (e) => {
       qsa('.wardrobe-tab').forEach(x=>x.classList.remove('active'));
       e.target.classList.add('active');
@@ -426,7 +420,7 @@
       qs('#' + e.target.dataset.tab).classList.add('active');
     });
     
-    // Builder
+    // BUILDER
     const build = (arr, id, prop, isColor) => {
       const el = qs('#'+id); el.innerHTML='';
       arr.forEach(val => {
@@ -473,7 +467,7 @@
     render();
   }
 
-  // --- LORE (SNES Art) ---
+  // --- LORE (Detailed Art) ---
   function drawPixelArt(ctx, map, size){
     map.forEach((row, y) => {
       [...row].forEach((char, x) => {
