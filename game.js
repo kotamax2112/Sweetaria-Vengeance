@@ -99,12 +99,13 @@
     o: ['short','side','spiky','bob','long','ponytail','mohawk']
   };
   
+  // --- NEW: Added 'rarity' to skins ---
   const SKINS = [
-    {id:'skin1', name:'Cone Knight', req:'beat_boss1', col:'#ff5a5a'},
-    {id:'skin2', name:'Blizzard', req:'long_run', col:'#4e9cff'},
-    {id:'skin3', name:'Kindness', req:'kind_only', col:'#ff7bc5'},
-    {id:'skin4', name:'Slayer', req:'beat_boss2', col:'#3ba55d'},
-    {id:'skin5', name:'Socialite', req:'share_game', col:'#ffd700'}
+    {id:'skin1', name:'Cone Knight', req:'beat_boss1', col:'#ff5a5a', rarity: 'rare'},
+    {id:'skin2', name:'Blizzard', req:'long_run', col:'#4e9cff', rarity: 'rare'},
+    {id:'skin3', name:'Kindness', req:'kind_only', col:'#ff7bc5', rarity: 'epic'},
+    {id:'skin4', name:'Slayer', req:'beat_boss2', col:'#3ba55d', rarity: 'epic'},
+    {id:'skin5', name:'Socialite', req:'share_game', col:'#ffd700', rarity: 'legendary'}
   ];
 
   const BOSS1_QUOTES = ["Ratio.", "Touch grass.", "Screenshotted.", "Cringe.", "Bestie no."];
@@ -234,7 +235,7 @@
     qsa('.close-btn').forEach(b=>b.onclick=()=>b.closest('.popup').classList.add('hidden'));
     
     updSet();
-    loop();
+    // --- FIX: Removed loop() call. It will be started by startRun() ---
   }
 
   function openPopup(id) { qs('#' + id).classList.remove('hidden'); }
@@ -253,7 +254,9 @@
     SV.rpg.active = false;
 
     SV.running=true; SV.paused=false; SV.lastTs=performance.now();
-    loop(); // <-- **FIX**: Start the game loop
+    
+    // --- CRITICAL FIX: Starts the game loop ---
+    loop(); 
   }
 
   function loop(ts){
@@ -300,7 +303,8 @@
     if(Math.random()<0.005) SV.powerups.push({x:850, y:200, w:40, h:40, type:pick(['shield','tesla','jetpack'])});
 
     SV.hazards.forEach(h => h.x -= 0.34*dt);
-    SV.powerups.forEach(p => p.x -= 0.34*dt); // <-- **FIX**: Was 'SV.powers'
+    // --- CRITICAL FIX: Was 'SV.powers' ---
+    SV.powerups.forEach(p => p.x -= 0.34*dt); 
 
     SV.hazards.forEach((h,i) => {
       if(rectHit(p.x,p.y,p.w,p.h, h.x,h.y,h.w,h.h)){
@@ -308,9 +312,10 @@
         else { SV.running=false; onPlayerDeath(); }
       }
     });
-    SV.powerups.forEach((pw,i) => { // <-- **FIX**: Was 'SV.powers'
+    // --- CRITICAL FIX: Was 'SV.powers' ---
+    SV.powerups.forEach((pw,i) => {
       if(rectHit(p.x,p.y,p.w,p.h, pw.x,pw.y,40,40)){
-        SV.powerups.splice(i,1); Sound.play(600,'sine'); // <-- **FIX**: Was 'SV.powers'
+        SV.powerups.splice(i,1); Sound.play(600,'sine'); // <-- FIX: Was 'SV.powers'
         if(pw.type==='shield') SV.shield=3;
         if(pw.type==='tesla') SV.tesla=5000;
         if(pw.type==='jetpack') { SV.jetpack=true; SV.jetpackTime=8000; }
@@ -353,7 +358,8 @@
       }
     });
 
-    SV.powerups.forEach(p => { // <-- **FIX**: Was 'SV.powers'
+    // --- CRITICAL FIX: Was 'SV.powers' ---
+    SV.powerups.forEach(p => { 
       ctx.shadowBlur=15; ctx.shadowColor='#fff';
       ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(p.x+20,p.y+20,20,0,7); ctx.fill();
       ctx.shadowBlur=0;
@@ -449,8 +455,9 @@
     build(ITEMS, 'item-options', 'item', false);
     refreshHair();
 
+    // --- FIX: Gender button selection ---
     qsa('.gender-btn').forEach(b => {
-      b.classList.remove('active'); // <-- **FIX**: Ensure only one is active
+      b.classList.remove('active'); // Ensure all are inactive first
       if(SV.settings.gender === b.dataset.gender) b.classList.add('active');
       b.onclick = () => { SV.settings.gender = b.dataset.gender; initWardrobe(); };
     });
@@ -458,15 +465,21 @@
     const sg = qs('#skins-grid'); sg.innerHTML='';
     SKINS.forEach(s => {
       const d = document.createElement('div');
-      // **FIX**: Changed SV.prog to SV.progress
-      d.className = `skin-card ${SV.settings.skin===s.id ? 'selected' : ''} ${SV.progress.ach[s.req] ? '' : 'locked'}`;
-      d.innerHTML = `<b>${s.name}</b>`;
-      if(SV.progress.ach[s.req]) d.onclick = () => { SV.settings.skin = s.id; initWardrobe(); }; // <-- **FIX**: Was SV.prog
+      // --- CRITICAL FIX: Was 'SV.prog' ---
+      const isUnlocked = SV.progress.ach[s.req];
+      d.className = `skin-card ${SV.settings.skin===s.id ? 'selected' : ''} ${isUnlocked ? '' : 'locked'} ${isUnlocked ? s.rarity : ''}`;
+      
+      if (isUnlocked) {
+        d.innerHTML = `<b>${s.name}</b>`;
+        d.onclick = () => { SV.settings.skin = s.id; initWardrobe(); };
+      } else {
+        d.innerHTML = `<b style="font-size:1.5rem; margin-bottom:10px;">???</b><small>Locked</small>`;
+      }
       sg.appendChild(d);
     });
     
     qs('#clear-skin-btn').onclick = () => { SV.settings.skin = null; initWardrobe(); };
-    render();
+    render(); // <-- This line draws the preview
   }
 
   // --- LORE (SNES Art) ---
@@ -488,7 +501,8 @@
 
   function buildAch() {
     const grid = qs('#achievements-grid'); grid.innerHTML = '';
-    const have = SV.progress.ach || {}; // <-- **FIX**: Was SV.prog
+    // --- CRITICAL FIX: Was 'SV.prog' ---
+    const have = SV.progress.ach || {}; 
     ACHIEVEMENTS.forEach(a => {
       const div = document.createElement('div');
       div.className = `achievement-tile ${have[a.id] ? 'unlocked' : ''}`;
@@ -497,7 +511,13 @@
     });
   }
 
-  function award(id) { if (!SV.progress.ach[id]) { SV.progress.ach[id] = true; Store.set('sv_prog', SV.progress); } } // <-- **FIX**: Was SV.prog
+  function award(id) { 
+    // --- CRITICAL FIX: Was 'SV.prog' ---
+    if (!SV.progress.ach[id]) { 
+      SV.progress.ach[id] = true; 
+      Store.set('sv_prog', SV.progress); 
+    } 
+  }
   
   function startRpgBoss(){ 
     SV.running=false; SV.rpg.active=true; openPopup('rpg-overlay'); SV.rpg.hp=100; 
@@ -505,7 +525,12 @@
       b.textContent = "Attack"; 
       b.onclick = () => {
         SV.rpg.hp -= 10; qs('#boss-hp-bar').style.width = SV.rpg.hp+'%';
-        if(SV.rpg.hp <= 0) { alert("YOU WON!"); SV.progress.endlessUnlocked=true; Store.set('sv_prog', SV.progress); location.reload(); }
+        if(SV.rpg.hp <= 0) { 
+          alert("YOU WON!"); 
+          SV.progress.endlessUnlocked=true; 
+          Store.set('sv_prog', SV.progress); // <-- FIX: Was SV.prog
+          location.reload(); 
+        }
       };
     });
   }
