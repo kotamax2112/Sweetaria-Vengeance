@@ -5,6 +5,7 @@
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;}
 body{ background:var(--bg); color:var(--ink); font-family:'Press Start 2P',monospace; overflow:hidden; }
 button,input{ font-family:inherit; }
+hr{ border:0; border-top:1px solid var(--border); opacity:0.5; margin:10px 0; }
 .hidden{ display:none!important; }
 .screen{ position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; z-index:1; }
 .scroll-col{ max-height:50vh; overflow-y:auto; width:100%; padding:2px; }
@@ -64,6 +65,7 @@ button,input{ font-family:inherit; }
 .panel{ background:var(--panel); border:2px solid var(--border); padding:20px; width:90%; max-width:500px; border-radius:16px; text-align:center; }
 .panel.wide{ max-width:700px; }
 .field{ margin:12px 0; text-align:left; }
+.field label{ display:block; font-size:0.8rem; margin-bottom:5px; }
 
 /* Wardrobe */
 .wardrobe-tabs{ display:flex; gap:10px; margin-bottom:10px; }
