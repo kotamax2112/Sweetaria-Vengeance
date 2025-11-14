@@ -111,3 +111,48 @@ hr{ border:0; border-top:1px solid var(--border); opacity:0.5; margin:10px 0; }
 /* Animations */
 @keyframes pulse{ 0%,100%{opacity:0.6} 50%{opacity:1} }
 @keyframes blink{ 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+#boss-banner{
+ position:absolute; top:20px; left:50%; transform:translateX(-50%);
+ background:rgba(200,0,0,0.8); color:#fff; padding:10px 20px; font-size:1.2rem; border-radius:8px; z-index:20;
+}
+#boss-hud{
+ position:absolute; top:60px; left:50%; transform:translateX(-50%);
+ background:rgba(0,0,0,0.6); color:#fff; padding:6px 12px; border-radius:6px; z-index:20;
+ display:flex; gap:12px;
+}
+.hidden{ display:none;}
+
+.boss-intro{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.88);
+  z-index:40;
+}
+.boss-card{
+  background:#111833;
+  border:2px solid #4e9cff;
+  padding:18px 26px;
+  border-radius:14px;
+  text-align:center;
+  box-shadow:0 0 18px rgba(78,156,255,0.75);
+  animation:bossCardSlide 0.45s ease-out forwards;
+}
+.boss-intro-title{
+  font-size:0.9rem;
+  letter-spacing:0.16em;
+  color:#ffd93b;
+  margin-bottom:4px;
+}
+.boss-intro-name{
+  font-size:1.3rem;
+  font-weight:700;
+  color:#ffffff;
+}
+@keyframes bossCardSlide{
+  0%{ transform:translateY(-32px); opacity:0; }
+  100%{ transform:translateY(0); opacity:1; }
+}

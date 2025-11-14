@@ -49,7 +49,15 @@
   <div id="level-progress-wrap"><div id="level-progress-fill"></div></div>
   <button id="pause-btn" class="icon-btn pause-pos">II</button>
   
-  <canvas id="game-canvas" width="800" height="480"></canvas>
+  <div id="boss-banner" class="hidden">BOSS APPROACHING</div>
+<div id="boss-hud" class="hidden"><span id="boss1-dodge"></span><span id="boss1-time"></span></div>
+<div id="boss-intro" class="boss-intro hidden">
+  <div class="boss-card">
+    <div class="boss-intro-title">BOSS APPROACHING</div>
+    <div id="boss-intro-name" class="boss-intro-name"></div>
+  </div>
+</div>
+<canvas id="game-canvas" width="800" height="480"></canvas>
   
   <button id="jump-btn" class="jump-btn">JUMP</button>
 </div>

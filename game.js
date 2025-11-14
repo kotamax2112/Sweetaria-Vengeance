@@ -202,6 +202,7 @@
 
     boss1: { active: false, hp: 1, y: 200, anim: 0, quote: '', quoteTimer: 0, dodged: 0 },
     rpg: { active: false, hp: 100, max: 100 },
+    bossIntro: { active: false, done: false, timer: 0, name: '' },
 
     devClicks: 0
   };
@@ -471,6 +472,10 @@
     SV.boss1.dodged = 0;
     SV.rpg.active = false;
     SV.rpg.hp = SV.rpg.max;
+    SV.bossIntro.active = false;
+    SV.bossIntro.done = false;
+    SV.bossIntro.timer = 0;
+    SV.bossIntro.name = '';
 
     const nameLabel = qs('#player-name-display');
     if (nameLabel) nameLabel.textContent = SV.settings.playerName || 'Hero';
@@ -523,11 +528,51 @@
     const bar = qs('#level-progress-fill');
     if (bar) bar.style.width = (prog * 100) + '%';
 
-    if (SV.levelTime >= 60000 && SV.level !== 5 && SV.level !== 10) {
+    if (SV.levelTime >= 60000) {
       SV.level++;
       SV.levelTime = 0;
       const lvlLabel = qs('#level-display');
       if (lvlLabel) lvlLabel.textContent = 'Lv ' + SV.level;
+    }
+
+    // Boss intros & stages
+    if (SV.level === 5 || SV.level === 10) {
+      // Start intro if not done
+      if (!SV.bossIntro.done && !SV.bossIntro.active) {
+        SV.bossIntro.active = true;
+        SV.bossIntro.timer = 0;
+        SV.bossIntro.name = SV.level === 5 ? 'CELL PHONE TEEN TROLL' : 'BIG BOSS HEAD';
+        const intro = qs('#boss-intro');
+        if (intro) intro.classList.remove('hidden');
+        const nameEl = qs('#boss-intro-name');
+        if (nameEl) nameEl.textContent = SV.bossIntro.name;
+      }
+
+      // Animate intro card
+      if (SV.bossIntro.active) {
+        SV.bossIntro.timer += dt;
+        if (SV.bossIntro.timer >= 2000) {
+          SV.bossIntro.active = false;
+          SV.bossIntro.done = true;
+          const intro = qs('#boss-intro');
+          if (intro) intro.classList.add('hidden');
+          if (SV.level === 10 && !SV.rpg.active) {
+            startRpgBoss();
+            return;
+          }
+        }
+        return;
+      }
+
+      // After intro, run boss logic
+      if (SV.level === 5) {
+        updateBoss1(dt);
+        return;
+      }
+      if (SV.level === 10 && !SV.rpg.active) {
+        startRpgBoss();
+        return;
+      }
     }
 
     // Score and best
@@ -593,16 +638,6 @@
       }
     }
 
-    // Boss stages
-    if (SV.level === 5) {
-      updateBoss1(dt);
-      return;
-    }
-    if (SV.level === 10 && !SV.rpg.active) {
-      startRpgBoss();
-      return;
-    }
-
     // Spawn hazards
     if (Math.random() < 0.015) {
       const type = Math.random() > 0.7 ? 'mine' : 'slime';
@@ -663,6 +698,12 @@
   function onPlayerDeath() {
     Sound.play(60, 'sawtooth', 0.5);
     award('die_lot');
+    const banner = qs('#boss-banner');
+    if (banner) banner.classList.add('hidden');
+    const hud = qs('#boss-hud');
+    if (hud) hud.classList.add('hidden');
+    const intro = qs('#boss-intro');
+    if (intro) intro.classList.add('hidden');
     openPopup('death-popup');
   }
 
@@ -756,7 +797,6 @@
 
     drawPlayerSprite(ctx, SV.player.x, SV.player.y);
 
-    // Boss 1 (Teen Troll)
     if (SV.level === 5 && SV.boss1 && SV.boss1.active) {
       drawBoss1(ctx);
     }
@@ -1003,7 +1043,8 @@
     }
   }
 
-  // --- BOSS LOGIC (Teen Troll + RPG Boss) ---
+
+  // --- BOSS 1: TEEN TROLL ---
   function updateBoss1(dt) {
     const b = SV.boss1;
     const p = SV.player;
@@ -1021,6 +1062,14 @@
       b.quote = '';
       b.quoteTimer = 0;
       SV.hazards = [];
+
+      const banner = qs('#boss-banner');
+      if (banner) {
+        banner.textContent = 'BOSS: CELL PHONE TEEN TROLL';
+        banner.classList.remove('hidden');
+      }
+      const hud = qs('#boss-hud');
+      if (hud) hud.classList.remove('hidden');
     }
 
     b.time += dt;
@@ -1030,6 +1079,11 @@
 
     const SURVIVE_MS = 22000;
     const DODGES_TO_WIN = 12;
+
+    const dodgeEl = qs('#boss1-dodge');
+    if (dodgeEl) dodgeEl.textContent = `Dodges: ${b.dodged}/${DODGES_TO_WIN}`;
+    const timeEl = qs('#boss1-time');
+    if (timeEl) timeEl.textContent = `Time: ${Math.max(0, Math.ceil((SURVIVE_MS - b.time) / 1000))}s`;
 
     if (b.time >= SURVIVE_MS || b.dodged >= DODGES_TO_WIN) {
       boss1Win();
@@ -1096,7 +1150,7 @@
       }
     }
 
-    // Update emoji hazards
+    // Update emoji hazards only during boss
     SV.hazards.forEach(h => {
       h.x -= SV.scrollSpd * dt;
       if (h.type === 'emoji') {
@@ -1136,6 +1190,10 @@
 
   function boss1Win() {
     SV.boss1.active = false;
+    const banner = qs('#boss-banner');
+    if (banner) banner.classList.add('hidden');
+    const hud = qs('#boss-hud');
+    if (hud) hud.classList.add('hidden');
     award('beat_boss1');
     SV.progress.lastCheckpoint = Math.max(SV.progress.lastCheckpoint || 0, 6);
     Store.set('sv_prog', SV.progress);
@@ -1149,7 +1207,6 @@
     const baseY = 200 + Math.sin(Date.now() * 0.002) * 20;
     b.y = baseY;
 
-    // Troll body (simple pixel-style blob)
     ctx.save();
     ctx.fillStyle = '#30395a';
     ctx.fillRect(baseX - 8, baseY - 8, 96, 80);
@@ -1157,7 +1214,6 @@
     ctx.fillStyle = '#88aaff';
     ctx.fillRect(baseX, baseY, 72, 56);
 
-    // Eyes (tired teen scroll stare)
     ctx.fillStyle = '#000';
     ctx.fillRect(baseX + 10, baseY + 12, 10, 6);
     ctx.fillRect(baseX + 40, baseY + 12, 10, 6);
@@ -1166,13 +1222,11 @@
     ctx.fillRect(baseX + 12, baseY + 13, 4, 2);
     ctx.fillRect(baseX + 42, baseY + 13, 4, 2);
 
-    // Phone in hand
     ctx.fillStyle = '#111';
     ctx.fillRect(baseX + 54, baseY + 26, 10, 18);
     ctx.fillStyle = '#3a3a3a';
     ctx.fillRect(baseX + 55, baseY + 27, 8, 12);
 
-    // Quote bubble
     if (b.quote && b.quoteTimer > 0) {
       ctx.fillStyle = 'rgba(10, 10, 25, 0.9)';
       ctx.fillRect(baseX - 110, baseY - 30, 100, 30);
@@ -1182,11 +1236,9 @@
       ctx.fillText(b.quote, baseX - 106, baseY - 12);
     }
 
-    // Ratio Beam visuals
     if (b.beamActive) {
       const y = b.beamY;
       if (b.beamPhase === 'telegraph') {
-        // Flickering warning line
         if (Math.floor(b.beamTimer / 100) % 2 === 0) {
           ctx.strokeStyle = '#c7a6ff';
           ctx.lineWidth = 3;
@@ -1211,7 +1263,8 @@
     ctx.restore();
   }
 
-  // --- RPG BOSS OVERLAY (Big Boss Head) ---
+  // --- RPG BOSS OVERLAY ---
+
   function startRpgBoss() {
     SV.running = false;
     SV.rpg.active = true;
@@ -1219,65 +1272,51 @@
     SV.rpg.hp = SV.rpg.max;
 
     const insults = [
-      'Your policies age like milk.',
-      'Okay Boomer.',
-      'No one asked.',
-      'Touch grass, senior.'
+      "Your game looks mid.",
+      "Skill issue, tbh.",
+      "Copium speedrun.",
+      "Imagine touching grass.",
+      "Bro wrote Sweetaria in Notepad."
     ];
     const replies = [
-      'Back in my day...',
-      'Kids these days...',
-      'You people are so entitled.',
-      'That\\'s not how the real world works.',
-      'Participation trophy generation!'
+      "Ok but you&rsquo;re still here playing.",
+      "Wild talk from someone with 0 XP.",
+      "Say &ldquo;skill issue&rdquo; again but slower.",
+      "You ratioed yourself, champ.",
+      "Keep coping, the HP bar disagrees."
     ];
 
-    const buttons = qsa('.insult-btn');
     const logEl = qs('#rpg-log');
     const bar = qs('#boss-hp-bar');
+    if (bar) bar.style.width = '100%';
 
-    if (bar) {
-      bar.style.width = '100%';
-    }
-    if (logEl) {
-      logEl.textContent = '';
-    }
-
-    const logLine = (prefix, text) => {
-      if (!logEl) return;
-      const line = document.createElement('div');
-      line.textContent = prefix + text;
-      logEl.appendChild(line);
-      logEl.scrollTop = logEl.scrollHeight;
-    };
-
+    const buttons = qsa('.insult-btn');
     buttons.forEach((btn, idx) => {
-      const label = insults[idx] || 'Attack';
-      btn.textContent = label;
+      btn.textContent = 'CLAP BACK #' + (idx + 1);
       btn.onclick = () => {
-        if (!SV.rpg.active) return;
-
-        // Player attack
-        SV.rpg.hp = Math.max(0, SV.rpg.hp - 10);
-        if (bar) {
-          bar.style.width = SV.rpg.hp + '%';
+        const insult = pick(insults);
+        const reply = pick(replies);
+        if (logEl) {
+          const row = document.createElement('div');
+          row.className = 'rpg-row';
+          row.innerHTML = `<b>Boss:</b> ${insult}<br><b>You:</b> ${reply}`;
+          logEl.prepend(row);
         }
-        logLine('You: ', label);
+        SV.rpg.hp = Math.max(0, SV.rpg.hp - 12);
+        if (bar) bar.style.width = SV.rpg.hp + '%';
+
+        Sound.play(240 + Math.random() * 120, 'square', 0.15, 0.1);
 
         if (SV.rpg.hp <= 0) {
-          SV.rpg.active = false;
           award('beat_boss2');
           SV.progress.endlessUnlocked = true;
           Store.set('sv_prog', SV.progress);
-          logLine('Boss: ', '...fine. You win.');
-          alert('You defeated the Big Boss Head! Endless Run unlocked.');
-          location.reload();
-          return;
+          setTimeout(() => {
+            alert('You mentally destroyed the boss.
+Endless mode unlocked!');
+            location.reload();
+          }, 250);
         }
-
-        // Boss reply
-        const reply = pick(replies);
-        logLine('Boss: ', reply);
       };
     });
   }
