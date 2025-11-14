@@ -10,19 +10,18 @@
 <body>
 
 <div id="title-screen" class="screen">
-  <div id="title-bg"><div class="flame"></div></div>
+  <div id="title-bg"><div class="flame layer1"></div><div class="flame layer2"></div></div>
   <div class="title-content">
-    <h1 class="game-title">SWEETARIA<br><span style="font-size:0.6em; color:#b8c6e3">VENGEANCE</span></h1>
+    <h1 class="game-title">SWEETARIA<br><span class="sub-title">VENGEANCE</span></h1>
     <p class="tap-to-start">TAP TO START</p>
   </div>
 </div>
 
 <div id="home-screen" class="screen hidden">
-  <div id="dev-trigger"></div> 
+  <div id="dev-trigger-zone"></div>
   <button id="settings-btn" class="icon-btn settings-pos">⚙️</button>
   
   <h2 class="home-title">MAIN MENU</h2>
-  
   <div class="menu-buttons">
     <button id="play-btn" class="btn primary">STORY MODE</button>
     <button id="endless-btn" class="btn">ENDLESS RUN</button>
@@ -48,7 +47,6 @@
   </div>
   
   <div id="level-progress-wrap"><div id="level-progress-fill"></div></div>
-  
   <button id="pause-btn" class="icon-btn pause-pos">II</button>
   
   <canvas id="game-canvas" width="800" height="480"></canvas>
@@ -70,7 +68,7 @@
       <div class="field"><label>Name</label><input id="player-name-input" type="text" maxlength="12"></div>
       <div class="field"><label>Gender</label>
         <div class="gender-options">
-          <button class="btn gender-btn active" data-gender="m">Male</button>
+          <button class="btn gender-btn" data-gender="m">Male</button>
           <button class="btn gender-btn" data-gender="f">Female</button>
           <button class="btn gender-btn" data-gender="o">Other</button>
         </div>
@@ -100,18 +98,18 @@
         <div class="lore-img"><canvas id="lore-canvas-1" width="128" height="128"></canvas></div>
         <div class="lore-text">
           <strong>The Cell Phone Teen Troll</strong><br>
-          <small style="color:#b8c6e3;">Born from the digital waste of a thousand unread notifications, she haunts the mid-levels of Sweetaria. She does not fight with swords, but with pure, weaponized apathy. Legend says she stared into the abyss of a scrolling feed until the feed stared back. Her primary attack is 'The Ratio'—a devastating beam of negative engagement.</small>
+          <small>Born from the digital waste of a thousand unread notifications, she haunts the mid-levels of Sweetaria. She fights not with swords, but with pure, weaponized apathy. Legend says she stared into the abyss of a scrolling feed until the feed stared back. Her primary attack is 'The Ratio'—a devastating beam of negative engagement.</small>
         </div>
       </div>
       <div class="lore-card">
         <div class="lore-img"><canvas id="lore-canvas-2" width="128" height="128"></canvas></div>
         <div class="lore-text">
           <strong>The Big Boss Head</strong><br>
-          <small style="color:#b8c6e3;">A manifestation of pure corporate spite. The Big Boss Head floats eternally at the summit of the spire, fueled by the tears of millennials. He possesses no body, for he needs no hands to crush dreams—only policy changes. He believes the world stopped turning in 1985 and that his only weakness is Kindness (which he finds "disgusting").</small>
+          <small>A manifestation of pure corporate spite. The Big Boss Head floats eternally at the summit of the spire, fueled by the tears of millennials. He possesses no body, for he needs no hands to crush dreams—only policy changes. He believes the world stopped turning in 1985 and that his only weakness is Kindness (which he finds "disgusting").</small>
         </div>
       </div>
     </div>
-    <button class="btn secondary close-btn" style="margin-top:10px;">Close</Lbutton>
+    <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
   </div>
 </div>
 
@@ -141,9 +139,9 @@
   <div class="panel">
     <h3>CREDITS</h3>
     <div class="scroll-col" style="font-size:0.8rem; line-height:1.6;">
-      <p><strong>Design & Code</strong><br>Dakota Weatherhead</p> <hr>
-      <p><strong>Art & Animation</strong><br>Dakota Weatherhead</p> <hr>
-      <p><strong>Music & SFX</strong><br>Dakota Weatherhead</p> <hr>
+      <p><strong>Design & Code</strong><br>Dakota Weatherhead</p><hr>
+      <p><strong>Art & Animation</strong><br>Dakota Weatherhead</p><hr>
+      <p><strong>Music & SFX</strong><br>Dakota Weatherhead</p><hr>
       <p><strong>Writing</strong><br>Dakota Weatherhead</p>
     </div>
     <button class="btn secondary close-btn" style="margin-top:10px;">Close</button>
