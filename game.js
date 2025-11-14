@@ -1,7 +1,7 @@
 /* =========================================================
-   SWEETARIA: VENGEANCE — BETA 2.0 (Full Restoration)
-   - Fixed: Black Screen, All Wardrobe, All Menus
-   - Added: SNES Lore Art, Share Reward, Hair Animation
+   SWEETARIA: VENGEANCE — DEV BUILD 3.1
+   - Stable 3.0 core preserved
+   - Added: Dev Tools, Clues System, Jetpack Height Fix, Level Timer, UI Powerup Chip
    ========================================================= */
 (() => {
   'use strict';
@@ -56,12 +56,12 @@
       "00000221111111122000",
       "00000221611116112200",
       "00000022111111112200",
-      "00000022213113122200", // Gapped teeth
+      "00000022213113122200",
       "00000004444444440000",
       "00000044444444444000",
       "00000044555555544000",
       "00000044555555544000",
-      "00000444555555544477", // Holding Phone
+      "00000444555555544477",
       "00000444555555544488",
       "00000444555555544488",
       "00000444555555544477",
@@ -74,12 +74,12 @@
       "00000099999999999000",
       "00000991111111199000",
       "00000911111111111900",
-      "00000916411116411900", // Eyes
+      "00000916411116411900",
       "00000916411116411900",
       "00000911111111111900",
       "00000091111111190000",
       "00000009111111900000",
-      "00000009166661900000", // Mouth
+      "00000009166661900000",
       "00000000911119000000",
       "00000000099990000000"
     ],
@@ -99,14 +99,14 @@
     o: ['short','side','spiky','bob','long','ponytail','mohawk']
   };
   
-  // --- NEW: Added 'rarity' to skins ---
+  // Skins with rarity
   const SKINS = [
     {id:'skin1', name:'Cone Knight', req:'beat_boss1', col:'#ff5a5a', rarity: 'rare'},
     {id:'skin2', name:'Blizzard', req:'long_run', col:'#4e9cff', rarity: 'rare'},
     {id:'skin3', name:'Kindness', req:'kind_only', col:'#ff7bc5', rarity: 'epic'},
     {id:'skin4', name:'Slayer', req:'beat_boss2', col:'#3ba55d', rarity: 'epic'},
     {id:'skin5', name:'Socialite', req:'share_game', col:'#ffd700', rarity: 'legendary'}
-  };
+  ];
 
   const BOSS1_QUOTES = ["Ratio.", "Touch grass.", "Screenshotted.", "Cringe.", "Bestie no."];
   const ACHIEVEMENTS = [
@@ -119,26 +119,99 @@
     { id:'secret_dev', title:'The 2112', desc:'Find Dev Menu' }
   ];
 
-  // --- STATE ---
+  // --- STATE & STORE ---
   const Store = {
-    get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch { return d; } },
+    get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
     set: (k, v) => localStorage.setItem(k, JSON.stringify(v))
   };
 
   const SV = {
-    settings: Store.get('sv_set', { music: true, sfx: true, playerName: 'Hero', gender: 'm', shirt: '#ff5a5a', pants: '#2d3549', skinTone: '#ffd5a3', hairStyle: 'short', item: 'none', skin: null }),
-    progress: Store.get('sv_prog', { ach: {}, jumps: 0, lastCheckpoint: 0, beatBoss1: false, beatBoss2: false, endlessUnlocked: false, allTimeScore: 0 }),
+    settings: Store.get('sv_set', {
+      music: true,
+      sfx: true,
+      playerName: 'Hero',
+      gender: 'm',
+      shirt: '#ff5a5a',
+      pants: '#2d3549',
+      skinTone: '#ffd5a3',
+      hairStyle: 'short',
+      item: 'none',
+      skin: null
+    }),
+    progress: Store.get('sv_prog', {
+      ach: {},
+      jumps: 0,
+      lastCheckpoint: 0,
+      beatBoss1: false,
+      beatBoss2: false,
+      endlessUnlocked: false,
+      allTimeScore: 0,
+      cluesUnlocked: false
+    }),
+
+    clues: Store.get('sv_clues', []),
     
-    running: false, paused: false, level: 1, score: 0, lastTs: 0, levelTime: 0,
+    running: false,
+    paused: false,
+    level: 1,
+    score: 0,
+    lastTs: 0,
+    levelTime: 0,
+
     player: {x:120, y:296, w:42, h:64, vy:0, onGround:true, jumpsUsed:0},
-    groundY: 360, gravity: 0.0018, scrollSpd: 0.34,
+    groundY: 360,
+    gravity: 0.0018,
+    scrollSpd: 0.34,
     
-    hazards: [], powerups: [], particles: [], hazardTimer: 0, nextHazard: 1000,
-    shield: 0, jetpack: false, tesla: 0, invuln: 0, jetpackTime: 0,
+    hazards: [],
+    powerups: [],
+    particles: [],
+    hazardTimer: 0,
+    nextHazard: 1000,
+
+    shield: 0,
+    jetpack: false,
+    tesla: 0,
+    invuln: 0,
+    jetpackTime: 0,
     
     boss1: { active: false, hp: 1, y: 200, anim: 0, quote: '', quoteTimer: 0, dodged: 0 },
     rpg: { active: false, hp: 100, max: 100 },
     devClicks: 0
+  };
+
+  // --- DEV TOOLS (Logic only, no UI file edits) ---
+  const Dev = {
+    invincible: false,
+    slowmo: false,
+    warpLevel(lv){ startRun(lv); },
+    clearHazards(){ SV.hazards = []; },
+    grantShield(){ SV.shield = 3; },
+    grantTesla(){ SV.tesla = 5000; },
+    grantJet(){ SV.jetpack = true; SV.jetpackTime = 8000; },
+    unlockEndless(){ SV.progress.endlessUnlocked = true; Store.set('sv_prog', SV.progress); alert('Endless unlocked.'); },
+    toggleInvincible(){
+      this.invincible = !this.invincible;
+      alert('Invincible: ' + (this.invincible ? 'ON' : 'OFF'));
+    },
+    toggleSlowmo(){
+      this.slowmo = !this.slowmo;
+      alert('Slow motion: ' + (this.slowmo ? 'ON' : 'OFF'));
+    },
+    debugState(){
+      console.log('SV STATE:', JSON.parse(JSON.stringify(SV)));
+      alert('State dumped to console.');
+    },
+    addClue(){
+      const t = prompt('Enter new clue text:');
+      if(t && t.trim()){
+        SV.clues.push(t.trim());
+        Store.set('sv_clues', SV.clues);
+        SV.progress.cluesUnlocked = true;
+        Store.set('sv_prog', SV.progress);
+        alert('Clue added and clues menu enabled.');
+      }
+    }
   };
 
   // --- INIT ---
@@ -146,6 +219,19 @@
     const cvs = qs('#game-canvas');
     if(!cvs) return console.error("FATAL: No Canvas");
     SV.ctx = cvs.getContext('2d');
+
+    // Style the powerup indicator into a chip in the stats area
+    const pInd = qs('#powerup-indicator');
+    if(pInd){
+      pInd.style.display = 'inline-block';
+      pInd.style.marginTop = '2px';
+      pInd.style.marginLeft = '6px';
+      pInd.style.padding = '2px 8px';
+      pInd.style.borderRadius = '12px';
+      pInd.style.background = 'rgba(10,15,30,0.85)';
+      pInd.style.border = '1px solid #4e9cff';
+      pInd.style.fontSize = '0.65rem';
+    }
 
     // --- GLOBAL CLICK (Unlock Audio) ---
     const unlockAudio = () => {
@@ -183,8 +269,14 @@
 
     // --- TOGGLES ---
     const updSet = () => {
-      ['#music-toggle', '#pause-music-btn'].forEach(id => qs(id).textContent = `Music: ${SV.settings.music?'ON':'OFF'}`);
-      ['#sfx-toggle', '#pause-sfx-btn'].forEach(id => qs(id).textContent = `SFX: ${SV.settings.sfx?'ON':'OFF'}`);
+      ['#music-toggle', '#pause-music-btn'].forEach(id => {
+        const el = qs(id);
+        if (el) el.textContent = `Music: ${SV.settings.music?'ON':'OFF'}`;
+      });
+      ['#sfx-toggle', '#pause-sfx-btn'].forEach(id => {
+        const el = qs(id);
+        if (el) el.textContent = `SFX: ${SV.settings.sfx?'ON':'OFF'}`;
+      });
       Store.set('sv_set', SV.settings);
     };
     const toggleMus = () => { SV.settings.music=!SV.settings.music; if(SV.settings.music) Sound.startMusic(); else Sound.stopMusic(); updSet(); };
@@ -210,24 +302,42 @@
       const p = SV.player;
       if(p.jumpsUsed < 2){ p.vy = p.jumpsUsed===0?-0.66:-0.58; p.jumpsUsed++; p.onGround=false; Sound.play(300,'square',0.1); }
     };
-    qs('#jump-btn').onpointerdown = jump; window.onkeydown = jump; qs('#game-canvas').onpointerdown = jump;
+    qs('#jump-btn').onpointerdown = jump;
+    window.onkeydown = jump;
+    qs('#game-canvas').onpointerdown = jump;
+
+    // Clues hotkey: C key when unlocked
+    window.addEventListener('keydown', (e) => {
+      if(e.code === 'KeyC' && SV.progress.cluesUnlocked && !SV.paused){
+        e.preventDefault();
+        showClues();
+      }
+    });
 
     // --- DEV MENU ---
     qs('#dev-trigger-zone').addEventListener('pointerdown', () => {
       SV.devClicks++; console.log("DevTap:", SV.devClicks);
       setTimeout(() => SV.devClicks = 0, 2000);
       if(SV.devClicks >= 5) {
-        if(prompt('Code?') === '2112') { openPopup('dev-menu'); award('secret_dev'); }
+        if(prompt('Code?') === '2112') { 
+          openPopup('dev-menu');
+          award('secret_dev');
+          initDevMenu();
+        }
         SV.devClicks = 0;
       }
     });
+
+    // Level warp buttons (existing)
     qsa('#dev-menu .dev-btn').forEach(b => b.onclick = () => {
-      closePopup('dev-menu'); SV.running=false; startRun(parseInt(b.dataset.level));
+      closePopup('dev-menu'); SV.running=false; Dev.warpLevel(parseInt(b.dataset.level,10));
     });
-    qsa('#dev-menu .btn').forEach(b => b.onclick = () => {
-      if(b.dataset.power==='shield') SV.shield=3;
-      if(b.dataset.power==='tesla') SV.tesla=5000;
-      if(b.dataset.power==='jetpack') { SV.jetpack=true; SV.jetpackTime=8000; }
+
+    // Power buttons (existing)
+    qsa('#dev-menu button[data-power]').forEach(b => b.onclick = () => {
+      if(b.dataset.power==='shield') Dev.grantShield();
+      if(b.dataset.power==='tesla') Dev.grantTesla();
+      if(b.dataset.power==='jetpack') Dev.grantJet();
       closePopup('dev-menu');
     });
 
@@ -235,29 +345,121 @@
     qsa('.close-btn').forEach(b=>b.onclick=()=>b.closest('.popup').classList.add('hidden'));
     
     updSet();
-    // NOTE: game loop starts when startRun() is called.
+  }
+
+  function initDevMenu(){
+    const panel = qs('#dev-menu .panel');
+    if(!panel || panel.dataset.devInit) return;
+    panel.dataset.devInit = '1';
+
+    const toolsRow = document.createElement('div');
+    toolsRow.className = 'row';
+    toolsRow.style.marginTop = '10px';
+
+    const makeBtn = (label, tool) => {
+      const btn = document.createElement('button');
+      btn.className = 'btn small';
+      btn.textContent = label;
+      btn.dataset.devtool = tool;
+      toolsRow.appendChild(btn);
+    };
+
+    makeBtn('Invincible', 'inv');
+    makeBtn('SlowMo', 'slow');
+    makeBtn('Clear Hazards', 'clear');
+    makeBtn('Unlock Endless', 'endless');
+    makeBtn('Debug State', 'debug');
+    makeBtn('Clues', 'clues');
+
+    // Insert above the Close button
+    const closeBtn = panel.querySelector('.close-btn');
+    panel.insertBefore(toolsRow, closeBtn || panel.lastElementChild);
+
+    panel.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if(!btn) return;
+      const tool = btn.dataset.devtool;
+      if(!tool) return;
+      if(tool === 'inv') Dev.toggleInvincible();
+      if(tool === 'slow') Dev.toggleSlowmo();
+      if(tool === 'clear') Dev.clearHazards();
+      if(tool === 'endless') Dev.unlockEndless();
+      if(tool === 'debug') Dev.debugState();
+      if(tool === 'clues') Dev.addClue();
+    });
   }
 
   function openPopup(id) { qs('#' + id).classList.remove('hidden'); }
   function closePopup(id) { qs('#' + id).classList.add('hidden'); }
 
+  // --- CLUES POPUP ---
+  function ensureCluesPopup(){
+    if(qs('#clues-popup')) return;
+    const wrap = document.createElement('div');
+    wrap.id = 'clues-popup';
+    wrap.className = 'popup hidden';
+    wrap.innerHTML = `
+      <div class="panel">
+        <h3>CLUES</h3>
+        <div id="clues-list" class="scroll-col" style="font-size:0.8rem; text-align:left;"></div>
+        <button class="btn secondary" id="clues-close-btn" style="margin-top:10px;">Close</button>
+      </div>`;
+    document.body.appendChild(wrap);
+    qs('#clues-close-btn').onclick = () => closePopup('clues-popup');
+  }
+
+  function showClues(){
+    ensureCluesPopup();
+    const list = qs('#clues-list');
+    list.innerHTML = '';
+    if(!SV.clues || !SV.clues.length){
+      list.innerHTML = '<p>No clues added yet.</p>';
+    } else {
+      SV.clues.forEach((c,i) => {
+        const p = document.createElement('p');
+        p.textContent = (i+1) + '. ' + c;
+        list.appendChild(p);
+      });
+    }
+    openPopup('clues-popup');
+  }
+
   // --- GAME LOOP ---
   function startRun(lv){
     if(lv==='popup'){ openPopup('start-popup'); return; }
-    ['home-screen', 'start-popup', 'death-popup', 'rpg-overlay'].forEach(id => qs('#' + id).classList.add('hidden'));
+    ['home-screen', 'start-popup', 'death-popup', 'rpg-overlay'].forEach(id => {
+      const el = qs('#' + id); 
+      if(el) el.classList.add('hidden');
+    });
     qs('#game-screen').classList.remove('hidden');
 
-    SV.level=lv; SV.score=0; SV.hazards=[]; SV.powerups=[]; SV.particles=[];
-    SV.player.x=120; SV.player.y=296; SV.player.vy=0; SV.player.onGround=true;
-    SV.shield=0; SV.jetpack=false; SV.tesla=0;
-    SV.boss1.active = false; SV.boss1.dodged = 0;
-    SV.rpg.active = false; SV.rpg.hp = SV.rpg.max;
+    SV.level = (typeof lv === 'number') ? lv : 1;
+    SV.score = 0;
+    SV.levelTime = 0;
+    SV.hazards = [];
+    SV.powerups = [];
+    SV.particles = [];
+    SV.player.x = 120;
+    SV.player.y = 296;
+    SV.player.vy = 0;
+    SV.player.onGround = true;
+    SV.player.jumpsUsed = 0;
+    SV.shield = 0;
+    SV.jetpack = false;
+    SV.tesla = 0;
+    SV.boss1.active = false;
+    SV.boss1.dodged = 0;
+    SV.rpg.active = false;
+    SV.rpg.hp = SV.rpg.max;
 
-    // Sync player name label
     const label = qs('#player-name-display');
     if (label) label.textContent = SV.settings.playerName || 'Hero';
 
-    SV.running=true; SV.paused=false; SV.lastTs=performance.now();
+    qs('#level-display').textContent = 'Lv ' + SV.level;
+
+    SV.running=true;
+    SV.paused=false;
+    SV.lastTs=performance.now();
     
     loop(); 
   }
@@ -276,16 +478,41 @@
 
   function update(dt){
     if(SV.rpg.active) return;
+
+    // Dev slowmo
+    if(Dev.slowmo) dt *= 0.4;
     
+    // Level timer ~60s per level
+    SV.levelTime += dt;
+    if(SV.levelTime >= 60000){
+      SV.level++;
+      SV.levelTime = 0;
+      const lvlEl = qs('#level-display');
+      if(lvlEl) lvlEl.textContent = 'Lv ' + SV.level;
+    }
+    
+    // Score & best
     SV.score += dt*0.01;
     qs('#score-display').textContent = Math.floor(SV.score);
     qs('#alltime-display').textContent = Math.floor(SV.progress.allTimeScore || 0);
     if(SV.score > (SV.progress.allTimeScore||0)) { SV.progress.allTimeScore = SV.score; Store.set('sv_prog', SV.progress); }
 
     const pInd = qs('#powerup-indicator');
-    if(SV.tesla>0) { SV.tesla-=dt; pInd.textContent="⚡ TESLA"; pInd.classList.remove('hidden'); }
-    else if(SV.jetpack) { SV.jetpackTime-=dt; if(SV.jetpackTime<=0) SV.jetpack=false; pInd.textContent="🚀 JET"; pInd.classList.remove('hidden'); }
-    else pInd.classList.add('hidden');
+    if(SV.tesla>0) {
+      SV.tesla-=dt;
+      if(pInd){ pInd.textContent="⚡ TESLA"; pInd.classList.remove('hidden'); }
+    }
+    else if(SV.jetpack) {
+      SV.jetpackTime-=dt;
+      if(SV.jetpackTime<=0) SV.jetpack=false;
+      if(pInd){ pInd.textContent="🚀 JETPACK"; pInd.classList.remove('hidden'); }
+    }
+    else if(SV.shield>0){
+      if(pInd){ pInd.textContent="🛡️ SHIELD ×" + SV.shield; pInd.classList.remove('hidden'); }
+    }
+    else if(pInd){
+      pInd.classList.add('hidden');
+    }
 
     if(SV.tesla > 0){
       const target = SV.hazards.find(h => h.x > SV.player.x && h.x < SV.player.x + 400);
@@ -293,27 +520,42 @@
     }
 
     const p = SV.player;
-    if(SV.jetpack) { p.vy=0; p.y=200+Math.sin(Date.now()*0.005)*10; p.onGround=false; }
-    else {
-      p.vy += 0.0018*dt; p.y += p.vy*dt;
+    // Jetpack: fly higher than hazards, safe altitude
+    if(SV.jetpack) { 
+      p.vy = 0;
+      p.y = 160 + Math.sin(Date.now()*0.005)*5;
+      p.onGround=false;
+      p.jumpsUsed = 0;
+    } else {
+      p.vy += 0.0018*dt;
+      p.y += p.vy*dt;
       if(p.y >= 296) { p.y=296; p.vy=0; p.onGround=true; p.jumpsUsed=0; }
     }
 
+    // Hazards and powerups spawn
     if(Math.random()<0.015) {
       const type = Math.random()>0.7 ? 'mine' : 'slime';
       SV.hazards.push({x:850, y:type==='mine'?230:296, w:36, h:36, type});
     }
-    if(Math.random()<0.005) SV.powerups.push({x:850, y:200, w:40, h:40, type:pick(['shield','tesla','jetpack'])});
+    if(Math.random()<0.005){
+      const sky = Math.random() < 0.5;
+      const y = sky ? randRange(140, 210) : 200;
+      SV.powerups.push({x:850, y, w:40, h:40, type:pick(['shield','tesla','jetpack'])});
+    }
 
     SV.hazards.forEach(h => h.x -= 0.34*dt);
     SV.powerups.forEach(pw => pw.x -= 0.34*dt); 
 
-    SV.hazards.forEach((h,i) => {
-      if(rectHit(p.x,p.y,p.w,p.h, h.x,h.y,h.w,h.h)){
-        if(SV.shield>0 || SV.jetpack) { SV.shield--; SV.hazards.splice(i,1); }
-        else { SV.running=false; onPlayerDeath(); }
-      }
-    });
+    // Collisions (ignore hazards if jetpack or invincible dev)
+    if(!SV.jetpack && !Dev.invincible){
+      SV.hazards.forEach((h,i) => {
+        if(rectHit(p.x,p.y,p.w,p.h, h.x,h.y,h.w,h.h)){
+          if(SV.shield>0) { SV.shield--; SV.hazards.splice(i,1); }
+          else { SV.running=false; onPlayerDeath(); }
+        }
+      });
+    }
+
     SV.powerups.forEach((pw,i) => {
       if(rectHit(p.x,p.y,p.w,p.h, pw.x,pw.y,40,40)){
         SV.powerups.splice(i,1); Sound.play(600,'sine');
@@ -408,7 +650,7 @@
     else if(s.item === 'cleaver') { ctx.fillRect(x+45,y+20,4,15); ctx.fillRect(x+38,y+15,20,10); }
   }
 
-  // --- WARDROBE (Fixed) ---
+  // --- WARDROBE ---
   function initWardrobe(){
     const cvs = document.createElement('canvas'); cvs.width=300; cvs.height=180;
     qs('#player-preview').innerHTML=''; qs('#player-preview').appendChild(cvs);
@@ -416,17 +658,17 @@
     
     const render = () => { ctx.clearRect(0,0,300,180); drawPlayerSprite(ctx, 130, 80); };
 
-    // Name field uses playerName
     const nameInput = qs('#player-name-input');
     if (nameInput) {
       nameInput.value = SV.settings.playerName || 'Hero';
       nameInput.onchange = (e) => {
         SV.settings.playerName = e.target.value || 'Hero';
         Store.set('sv_set', SV.settings);
+        const label = qs('#player-name-display');
+        if(label) label.textContent = SV.settings.playerName;
       };
     }
 
-    // TABS
     qsa('.wardrobe-tab').forEach(t => t.onclick = (e) => {
       qsa('.wardrobe-tab').forEach(x=>x.classList.remove('active'));
       e.target.classList.add('active');
@@ -434,7 +676,6 @@
       qs('#' + e.target.dataset.tab).classList.add('active');
     });
     
-    // BUILDER
     const build = (arr, id, prop, isColor) => {
       const el = qs('#'+id); if(!el) return;
       el.innerHTML='';
@@ -464,7 +705,6 @@
     build(ITEMS, 'item-options', 'item', false);
     refreshHair();
 
-    // Gender buttons
     qsa('.gender-btn').forEach(b => {
       b.classList.remove('active');
       if(SV.settings.gender === b.dataset.gender) b.classList.add('active');
