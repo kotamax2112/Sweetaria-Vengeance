@@ -7,8 +7,8 @@
   'use strict';
 
   // --- UTILS ---
-  const qs = (s) => document.querySelector(s);
-  const qsa = (s) => document.querySelectorAll(s);
+  const qs = (s, r = document) => r.querySelector(s);
+  const qsa = (s, r = document) => Array.from(r.querySelectorAll(s));
   const clamp = (v, l, h) => Math.max(l, Math.min(h, v));
   const randRange = (a, b) => a + Math.random() * (b - a);
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -46,7 +46,7 @@
 
   // --- PIXEL ART (SNES Style) ---
   const ART = {
-    // 0=Empty, 1=Skin, 2=PinkHair, 3=Gap, 4=BlueCoat, 5=White, 6=BlackEye, 7=Phone
+    // 0=Empty, 1=Skin, 2=BlondeHair, 3=Gap, 4=BlueCoat, 5=White, 6=BlackEye, 7=Phone, 8=PhoneScreen
     troll: [
       "00000002222222200000",
       "00000222222222222000",
@@ -59,29 +59,29 @@
       "00000033333333333000",
       "00000033444444433000",
       "00000033444444433000",
-      "00000333444444433300",
-      "00000333444444433300",
       "00000333444444433377", // Holding Phone
+      "00000333444444433388",
+      "00000333444444433388",
       "00000333444444433377",
       "00000000000000000000"
     ],
-    // 0=Empty, 5=Red, 4=White, 6=Black, 9=GrayHair
+    // 0=Empty, 5=RedSkin, 4=WhiteEye, 6=BlackPupil, 9=GrayHair
     head: [
       "00000000099999900000",
       "00000009999999900000",
       "00000099999999999000",
       "00000995555555599000",
       "00000955555555555900",
-      "00000956455556455900", // Eyes
+      "00000956455556455900",
       "00000956455556455900",
       "00000955555555555900",
       "00000095555555590000",
       "00000009555555900000",
-      "00000009566665900000", // Mouth
+      "00000009566665900000",
       "00000000955559000000",
       "00000000099990000000"
     ],
-    colors: { '1':'#ffd5a3','2':'#ff91e0','3':'#5e6c8c','4':'#fff','5':'#ff3860','6':'#000','7':'#999','9':'#ccc' }
+    colors: { '1':'#ffd5a3','2':'#ffee7a','3':'#5e6c8c','4':'#fff','5':'#ff3860','6':'#000','7':'#999','8':'#aaf','9':'#ccc' }
   };
 
   // --- GAME DATA ---
@@ -94,7 +94,7 @@
   const HAIRS = {
     m: ['short','side','spiky'],
     f: ['bob','long','ponytail'],
-    o: ['short','side','spiky','bob','long','ponytail','mohawk'] // Combined list
+    o: ['short','side','spiky','bob','long','ponytail','mohawk']
   };
   
   const SKINS = [
@@ -122,23 +122,12 @@
     set: (k, v) => localStorage.setItem(k, JSON.stringify(v))
   };
 
-  // This SV object is the single source of truth.
   const SV = {
-    settings: Store.get('sv_set', { 
-      music: true, sfx: true, playerName: 'Hero', gender: 'm', 
-      shirt: '#ff5a5a', pants: '#2d3549', skinTone: '#ffd5a3', 
-      hairStyle: 'short', item: 'none', skin: null 
-    }),
-    progress: Store.get('sv_prog', { 
-      ach: {}, jumps: 0, lastCheckpoint: 0, beatBoss1: false, 
-      beatBoss2: false, endlessUnlocked: false, allTimeScore: 0 
-    }),
+    settings: Store.get('sv_set', { music: true, sfx: true, playerName: 'Hero', gender: 'm', shirt: '#ff5a5a', pants: '#2d3549', skinTone: '#ffd5a3', hairStyle: 'short', item: 'none', skin: null }),
+    progress: Store.get('sv_prog', { ach: {}, jumps: 0, lastCheckpoint: 0, beatBoss1: false, beatBoss2: false, endlessUnlocked: false, allTimeScore: 0 }),
     
     running: false, paused: false, level: 1, score: 0, lastTs: 0, levelTime: 0,
-    
-    // THIS is the player object used in update() and draw()
     player: {x:120, y:296, w:42, h:64, vy:0, onGround:true, jumpsUsed:0},
-    
     groundY: 360, gravity: 0.0018, scrollSpd: 0.34,
     
     hazards: [], powerups: [], particles: [], hazardTimer: 0, nextHazard: 1000,
@@ -155,7 +144,7 @@
     if(!cvs) return console.error("FATAL: No Canvas");
     SV.ctx = cvs.getContext('2d');
 
-    // --- GLOBAL CLICK (Unlock Audio) ---
+    // Global click to unlock audio
     const unlockAudio = () => {
       Sound.init();
       if(SV.settings.music) Sound.startMusic();
@@ -163,15 +152,16 @@
     };
     document.addEventListener('pointerdown', unlockAudio);
 
-    // --- BUTTON BINDINGS ---
+    // Title
     qs('#title-screen').onclick = () => {
       qs('#title-screen').classList.add('hidden');
       qs('#home-screen').classList.remove('hidden');
     };
 
+    // Home
     qs('#play-btn').onclick = () => startRun(SV.progress.lastCheckpoint > 1 ? 'popup' : 1);
     qs('#endless-btn').onclick = () => {
-      if(SV.progress.endlessUnlocked) startRun(99); // 99 = Endless Mode
+      if(SV.progress.endlessUnlocked) startRun(99);
       else alert("You must beat Story Mode to unlock Endless Run!");
     };
     qs('#wardrobe-btn').onclick = () => { openPopup('wardrobe-popup'); initWardrobe(); };
@@ -179,17 +169,19 @@
     qs('#achievements-btn').onclick = () => { buildAch(); openPopup('achievements-popup'); };
     qs('#share-btn').onclick = () => openPopup('share-popup');
     qs('#settings-btn').onclick = () => openPopup('settings-popup');
-    qs('#open-credits-btn').onclick = () => { closePopup('settings-popup'); openPopup('credits-popup'); };
     qs('#return-title-btn').onclick = () => location.reload();
+
+    // Popups
+    qs('#start-at-last').onclick = () => { closePopup('start-popup'); startRun(SV.progress.lastCheckpoint||1); };
+    qs('#start-beginning').onclick = () => { closePopup('start-popup'); startRun(1); };
+    qs('#open-credits-btn').onclick = () => { closePopup('settings-popup'); openPopup('credits-popup'); };
     qs('#copy-share-btn').onclick = () => {
       navigator.clipboard.writeText(qs('#share-link').value);
       alert("Link Copied! 'Socialite' Skin Unlocked.");
       award('share_game');
     };
-    qs('#start-at-last').onclick = () => { closePopup('start-popup'); startRun(SV.progress.lastCheckpoint||1); };
-    qs('#start-beginning').onclick = () => { closePopup('start-popup'); startRun(1); };
 
-    // --- TOGGLES ---
+    // Toggles
     const updSet = () => {
       ['#music-toggle', '#pause-music-btn'].forEach(id => qs(id).textContent = `Music: ${SV.settings.music?'ON':'OFF'}`);
       ['#sfx-toggle', '#pause-sfx-btn'].forEach(id => qs(id).textContent = `SFX: ${SV.settings.sfx?'ON':'OFF'}`);
@@ -201,17 +193,16 @@
     qs('#sfx-toggle').onclick = toggleSfx; qs('#pause-sfx-btn').onclick = toggleSfx;
     qs('#reset-progress-btn').onclick = () => { if(confirm("Reset All Data?")) { localStorage.clear(); location.reload(); } };
 
-    // --- PAUSE ---
+    // Pause
     qs('#pause-btn').onclick = () => { SV.paused = true; openPopup('pause-menu'); };
     qs('#resume-btn').onclick = () => { closePopup('pause-menu'); SV.paused = false; SV.lastTs = performance.now(); loop(); };
     qs('#quit-btn').onclick = () => location.reload();
     
-    // --- DEATH (Bound Once) ---
+    // Death
     qs('#death-restart-checkpoint').onclick = () => { closePopup('death-popup'); startRun(SV.progress.lastCheckpoint || 1); };
     qs('#death-exit-main').onclick = () => location.reload();
 
-
-    // --- CONTROLS ---
+    // Controls
     const jump = (e) => { 
       if(!SV.running || SV.paused) return;
       if(e.type==='keydown' && e.code!=='Space') return;
@@ -221,7 +212,7 @@
     };
     qs('#jump-btn').onpointerdown = jump; window.onkeydown = jump; qs('#game-canvas').onpointerdown = jump;
 
-    // --- DEV MENU (Top Left) ---
+    // Dev Menu
     qs('#dev-trigger-zone').addEventListener('pointerdown', () => {
       SV.devClicks++; console.log("DevTap:", SV.devClicks);
       setTimeout(() => SV.devClicks = 0, 2000);
@@ -230,28 +221,33 @@
         SV.devClicks = 0;
       }
     });
-    window.devJump = (l) => { closePopup('dev-menu'); SV.running=false; startRun(l); }; // Must stop old run
-    window.devPower = (t) => {
-      if(t==='shield') SV.shield=3; if(t==='tesla') SV.tesla=5000;
-      if(t==='jetpack') { SV.jetpack=true; SV.jetpackTime=8000; }
+    qsa('#dev-menu .dev-btn').forEach(b => b.onclick = () => {
+      closePopup('dev-menu'); SV.running=false; startRun(parseInt(b.dataset.level));
+    });
+    qsa('#dev-menu .btn').forEach(b => b.onclick = () => {
+      if(b.dataset.power==='shield') SV.shield=3;
+      if(b.dataset.power==='tesla') SV.tesla=5000;
+      if(b.dataset.power==='jetpack') { SV.jetpack=true; SV.jetpackTime=8000; }
       closePopup('dev-menu');
-    };
+    });
 
+    // Universal Close
     qsa('.close-btn').forEach(b=>b.onclick=()=>b.closest('.popup').classList.add('hidden'));
+    
     updSet();
-    loop(); // Start the loop
+    loop();
   }
 
   function openPopup(id) { qs('#' + id).classList.remove('hidden'); }
   function closePopup(id) { qs('#' + id).classList.add('hidden'); }
 
-  // --- GAME ENGINE ---
+  // --- GAME LOOP ---
   function startRun(lv){
     if(lv==='popup'){ openPopup('start-popup'); return; }
-    ['home-screen', 'start-popup', 'death-popup', 'rpg-overlay'].forEach(id => qs('#' + id).classList.add('hidden'));
+    ['home-screen', 'start-popup', 'death-popup', 'rpg-overlay'].forEach(id => qs('#'s + id).classList.add('hidden'));
     qs('#game-screen').classList.remove('hidden');
 
-    SV.level=lv; SV.score=0; SV.hazards=[]; SV.powerups=[];
+    SV.level=lv; SV.score=0; SV.hazards=[]; SV.powerups=[]; SV.particles=[];
     SV.player.x=120; SV.player.y=296; SV.player.vy=0; SV.player.onGround=true;
     SV.shield=0; SV.jetpack=false; SV.tesla=0;
     SV.boss1.active = false; SV.boss1.dodged = 0;
@@ -265,8 +261,10 @@
     if(SV.paused) { requestAnimationFrame(loop); return; }
     
     const dt = ts - SV.lastTs || 16; SV.lastTs = ts;
-    update(dt);
-    draw();
+    
+    try { update(dt); } catch(e) { console.error(e); SV.running=false; }
+    try { draw(); } catch(e) { console.error(e); SV.running=false; }
+    
     requestAnimationFrame(loop);
   }
 
@@ -278,9 +276,11 @@
     qs('#alltime-display').textContent = Math.floor(SV.progress.allTimeScore || 0);
     if(SV.score > (SV.progress.allTimeScore||0)) { SV.progress.allTimeScore = SV.score; Store.set('sv_prog', SV.progress); }
 
-    if(SV.tesla>0) { SV.tesla-=dt; qs('#powerup-indicator').classList.remove('hidden'); qs('#powerup-indicator').textContent="⚡ TESLA"; }
-    else if(SV.jetpack) { SV.jetpackTime-=dt; if(SV.jetpackTime<=0) SV.jetpack=false; qs('#powerup-indicator').classList.remove('hidden'); qs('#powerup-indicator').textContent="🚀 JET"; }
-    else qs('#powerup-indicator').classList.add('hidden');
+    // Powerups
+    const pInd = qs('#powerup-indicator');
+    if(SV.tesla>0) { SV.tesla-=dt; pInd.textContent="⚡ TESLA"; pInd.classList.remove('hidden'); }
+    else if(SV.jetpack) { SV.jetpackTime-=dt; if(SV.jetpackTime<=0) SV.jetpack=false; pInd.textContent="🚀 JET"; pInd.classList.remove('hidden'); }
+    else pInd.classList.add('hidden');
 
     // Tesla
     if(SV.tesla > 0){
@@ -299,9 +299,9 @@
     // Spawning
     if(Math.random()<0.015) {
       const type = Math.random()>0.7 ? 'mine' : 'slime';
-      SV.hazards.push({x:850, y:type==='mine'?230:(SV.groundY-36), w:36, h:36, type}); // Slime Y fixed
+      SV.hazards.push({x:850, y:type==='mine'?230:296, w:36, h:36, type}); // Slime Y fixed to 296
     }
-    if(Math.random()<0.005) SV.powers.push({x:850, y:200, w:40, h:40, type:pick(['shield','tesla','jetpack'])});
+    if(Math.random()<0.005) SV.powerups.push({x:850, y:200, w:40, h:40, type:pick(['shield','tesla','jetpack'])});
 
     SV.hazards.forEach(h => h.x -= 0.34*dt);
     SV.powers.forEach(p => p.x -= 0.34*dt);
@@ -333,6 +333,7 @@
 
   // --- DRAWING ---
   function draw(){
+    if(!SV.ctx) return; // Safety check
     const ctx = SV.ctx; ctx.clearRect(0,0,800,480);
     // Alpha Background
     const t = performance.now()*0.00005;
@@ -353,7 +354,8 @@
           ctx.beginPath(); ctx.moveTo(h.x+18,h.y+18); ctx.lineTo(h.x+18+Math.cos(a)*25, h.y+18+Math.sin(a)*25); ctx.stroke();
         }
       } else {
-        ctx.fillStyle='#0f0'; ctx.beginPath(); ctx.arc(h.x+18,h.y+18,18,Math.PI,0); ctx.fill();
+        ctx.fillStyle='#0f0'; ctx.beginPath(); ctx.arc(h.x+18,h.y+18,18,0,7); ctx.fill(); // Full circle slime
+        ctx.fillStyle='#000'; ctx.fillRect(h.x+8,h.y+10,6,6); ctx.fillRect(h.x+22,h.y+10,6,6); // Eyes
       }
     });
 
@@ -361,10 +363,10 @@
       ctx.shadowBlur=15; ctx.shadowColor='#fff';
       ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(p.x+20,p.y+20,20,0,7); ctx.fill();
       ctx.shadowBlur=0;
-      ctx.fillStyle='#000'; ctx.font='20px monospace';
-      if(p.type==='shield') ctx.fillText('🛡️',p.x+10,p.y+26);
-      if(p.type==='tesla') ctx.fillText('⚡',p.x+10,p.y+26);
-      if(p.type==='jetpack') ctx.fillText('🚀',p.x+10,p.y+26);
+      ctx.fillStyle='#000'; ctx.font='20px monospace'; ctx.textAlign='center';
+      if(p.type==='shield') ctx.fillText('🛡️',p.x+20,p.y+26);
+      if(p.type==='tesla') ctx.fillText('⚡',p.x+20,p.y+26);
+      if(p.type==='jetpack') ctx.fillText('🚀',p.x+20,p.y+26);
     });
 
     drawPlayerSprite(ctx, SV.player.x, SV.player.y);
@@ -391,19 +393,19 @@
     
     ctx.fillStyle = '#70421b'; // Hair
     const wind = Math.sin(Date.now()*0.005) * 2;
-    if(s.hairStyle==='short') ctx.fillRect(x+8,y-20,26,8);
     if(s.hairStyle==='long') { ctx.fillRect(x+8,y-20,26,10); ctx.fillRect(x+4+wind,y-10,6,24); }
-    if(s.hairStyle==='ponytail') { ctx.fillRect(x+8,y-20,24,8); ctx.fillRect(x+26+wind,y-12,6,16); }
-    if(s.hairStyle==='mohawk') { ctx.fillRect(x+18,y-24,6,12); }
-    if(s.hairStyle==='bob') { ctx.fillRect(x+6,y-20,28,12); }
-    if(s.hairStyle==='side') { ctx.fillRect(x+6,y-20,28,10); ctx.fillRect(x+30,y-12,4,10); }
-    if(s.hairStyle==='spiky') { for(let i=0; i<5; i++) ctx.fillRect(x+10+i*5, y-24, 4, 10); }
+    else if(s.hairStyle==='ponytail') { ctx.fillRect(x+8,y-20,24,8); ctx.fillRect(x+26+wind,y-12,6,16); }
+    else if(s.hairStyle==='short') ctx.fillRect(x+8,y-20,26,8);
+    else if(s.hairStyle==='bob') { ctx.fillRect(x+6,y-20,28,12); }
+    else if(s.hairStyle==='side') { ctx.fillRect(x+6,y-20,28,10); ctx.fillRect(x+30,y-12,4,10); }
+    else if(s.hairStyle==='spiky') { for(let i=0; i<5; i++) ctx.fillRect(x+10+i*5, y-24, 4, 10); }
+    else if(s.hairStyle==='mohawk') { ctx.fillRect(x+18,y-24,6,12); }
 
     ctx.fillStyle = '#999'; // Items
     if(s.item === 'sword') { ctx.fillRect(x+45,y+20,4,8); ctx.fillRect(x+35,y+26,24,4); }
-    if(s.item === 'scepter') { ctx.fillRect(x+45,y+20,4,30); ctx.fillStyle='#ff0'; ctx.fillRect(x+43,y+15,8,8); }
-    if(s.item === 'mallet') { ctx.fillRect(x+45,y+20,4,20); ctx.fillStyle='#8b4513'; ctx.fillRect(x+38,y,20,15); }
-    if(s.item === 'cleaver') { ctx.fillRect(x+45,y+20,4,15); ctx.fillRect(x+38,y+15,20,10); }
+    else if(s.item === 'scepter') { ctx.fillRect(x+45,y+20,4,30); ctx.fillStyle='#ff0'; ctx.beginPath(); ctx.arc(x+47,y+15,6,0,7); ctx.fill(); }
+    else if(s.item === 'mallet') { ctx.fillRect(x+45,y+20,4,20); ctx.fillStyle='#8b4513'; ctx.fillRect(x+38,y,20,15); }
+    else if(s.item === 'cleaver') { ctx.fillRect(x+45,y+20,4,15); ctx.fillRect(x+38,y+15,20,10); }
   }
 
   // --- WARDROBE ---
@@ -416,7 +418,7 @@
     qs('#player-name-input').value = SV.settings.name;
     qs('#player-name-input').onchange = (e) => SV.settings.name = e.target.value;
 
-    // TABS
+    // Tabs
     qsa('.wardrobe-tab').forEach(t => t.onclick = (e) => {
       qsa('.wardrobe-tab').forEach(x=>x.classList.remove('active'));
       e.target.classList.add('active');
@@ -424,7 +426,7 @@
       qs('#' + e.target.dataset.tab).classList.add('active');
     });
     
-    // BUILDER
+    // Builder
     const build = (arr, id, prop, isColor) => {
       const el = qs('#'+id); el.innerHTML='';
       arr.forEach(val => {
@@ -443,8 +445,7 @@
     };
 
     const refreshHair = () => {
-      let styles = HAIRS[SV.settings.gender];
-      if(SV.settings.gender === 'o') styles = [...HAIRS.m, ...HAIRS.f];
+      let styles = HAIRS[SV.settings.gender] || HAIRS.m;
       build(styles, 'hair-options', 'hairStyle', false);
     };
 
@@ -472,7 +473,7 @@
     render();
   }
 
-  // --- LORE (Detailed Art) ---
+  // --- LORE (SNES Art) ---
   function drawPixelArt(ctx, map, size){
     map.forEach((row, y) => {
       [...row].forEach((char, x) => {
