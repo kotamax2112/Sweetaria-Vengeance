@@ -106,7 +106,7 @@
     {id:'skin3', name:'Kindness', req:'kind_only', col:'#ff7bc5', rarity: 'epic'},
     {id:'skin4', name:'Slayer', req:'beat_boss2', col:'#3ba55d', rarity: 'epic'},
     {id:'skin5', name:'Socialite', req:'share_game', col:'#ffd700', rarity: 'legendary'}
-  ];
+  };
 
   const BOSS1_QUOTES = ["Ratio.", "Touch grass.", "Screenshotted.", "Cringe.", "Bestie no."];
   const ACHIEVEMENTS = [
@@ -235,7 +235,7 @@
     qsa('.close-btn').forEach(b=>b.onclick=()=>b.closest('.popup').classList.add('hidden'));
     
     updSet();
-    // --- FIX: Removed loop() call. It will be started by startRun() ---
+    // NOTE: game loop starts when startRun() is called.
   }
 
   function openPopup(id) { qs('#' + id).classList.remove('hidden'); }
@@ -251,17 +251,20 @@
     SV.player.x=120; SV.player.y=296; SV.player.vy=0; SV.player.onGround=true;
     SV.shield=0; SV.jetpack=false; SV.tesla=0;
     SV.boss1.active = false; SV.boss1.dodged = 0;
-    SV.rpg.active = false;
+    SV.rpg.active = false; SV.rpg.hp = SV.rpg.max;
+
+    // Sync player name label
+    const label = qs('#player-name-display');
+    if (label) label.textContent = SV.settings.playerName || 'Hero';
 
     SV.running=true; SV.paused=false; SV.lastTs=performance.now();
     
-    // --- CRITICAL FIX: Starts the game loop ---
     loop(); 
   }
 
   function loop(ts){
-    if(!SV.running) return; // Stop if not running
-    if(SV.paused) { requestAnimationFrame(loop); return; } // Pause
+    if(!SV.running) return;
+    if(SV.paused) { requestAnimationFrame(loop); return; }
     
     const dt = ts - SV.lastTs || 16; SV.lastTs = ts;
     
@@ -303,8 +306,7 @@
     if(Math.random()<0.005) SV.powerups.push({x:850, y:200, w:40, h:40, type:pick(['shield','tesla','jetpack'])});
 
     SV.hazards.forEach(h => h.x -= 0.34*dt);
-    // --- CRITICAL FIX: Was 'SV.powers' ---
-    SV.powerups.forEach(p => p.x -= 0.34*dt); 
+    SV.powerups.forEach(pw => pw.x -= 0.34*dt); 
 
     SV.hazards.forEach((h,i) => {
       if(rectHit(p.x,p.y,p.w,p.h, h.x,h.y,h.w,h.h)){
@@ -312,10 +314,9 @@
         else { SV.running=false; onPlayerDeath(); }
       }
     });
-    // --- CRITICAL FIX: Was 'SV.powers' ---
     SV.powerups.forEach((pw,i) => {
       if(rectHit(p.x,p.y,p.w,p.h, pw.x,pw.y,40,40)){
-        SV.powerups.splice(i,1); Sound.play(600,'sine'); // <-- FIX: Was 'SV.powers'
+        SV.powerups.splice(i,1); Sound.play(600,'sine');
         if(pw.type==='shield') SV.shield=3;
         if(pw.type==='tesla') SV.tesla=5000;
         if(pw.type==='jetpack') { SV.jetpack=true; SV.jetpackTime=8000; }
@@ -358,7 +359,6 @@
       }
     });
 
-    // --- CRITICAL FIX: Was 'SV.powers' ---
     SV.powerups.forEach(p => { 
       ctx.shadowBlur=15; ctx.shadowColor='#fff';
       ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(p.x+20,p.y+20,20,0,7); ctx.fill();
@@ -372,11 +372,11 @@
     drawPlayerSprite(ctx, SV.player.x, SV.player.y);
 
     if(SV.tesla>0 && SV.hazards.length>0){
-      const t = SV.hazards.find(h => h.x > SV.player.x && h.x < SV.player.x + 400);
-      if(t){
+      const tgt = SV.hazards.find(h => h.x > SV.player.x && h.x < SV.player.x + 400);
+      if(tgt){
         ctx.strokeStyle='#0ff'; ctx.lineWidth=3; ctx.beginPath();
         ctx.moveTo(SV.player.x+20, SV.player.y+30);
-        ctx.lineTo(t.x+18, t.y+18);
+        ctx.lineTo(tgt.x+18, tgt.y+18);
         ctx.stroke();
       }
     }
@@ -415,8 +415,16 @@
     const ctx = cvs.getContext('2d');
     
     const render = () => { ctx.clearRect(0,0,300,180); drawPlayerSprite(ctx, 130, 80); };
-    qs('#player-name-input').value = SV.settings.name;
-    qs('#player-name-input').onchange = (e) => SV.settings.name = e.target.value;
+
+    // Name field uses playerName
+    const nameInput = qs('#player-name-input');
+    if (nameInput) {
+      nameInput.value = SV.settings.playerName || 'Hero';
+      nameInput.onchange = (e) => {
+        SV.settings.playerName = e.target.value || 'Hero';
+        Store.set('sv_set', SV.settings);
+      };
+    }
 
     // TABS
     qsa('.wardrobe-tab').forEach(t => t.onclick = (e) => {
@@ -428,7 +436,8 @@
     
     // BUILDER
     const build = (arr, id, prop, isColor) => {
-      const el = qs('#'+id); el.innerHTML='';
+      const el = qs('#'+id); if(!el) return;
+      el.innerHTML='';
       arr.forEach(val => {
         const b = document.createElement('button');
         if(isColor){ b.className='color-swatch'; b.style.background=val; }
@@ -438,7 +447,7 @@
           SV.settings[prop] = val;
           if(prop==='shirt') SV.settings.skin = null;
           Store.set('sv_set', SV.settings);
-          initWardrobe();
+          render();
         };
         el.appendChild(b);
       });
@@ -455,31 +464,42 @@
     build(ITEMS, 'item-options', 'item', false);
     refreshHair();
 
-    // --- FIX: Gender button selection ---
+    // Gender buttons
     qsa('.gender-btn').forEach(b => {
-      b.classList.remove('active'); // Ensure all are inactive first
+      b.classList.remove('active');
       if(SV.settings.gender === b.dataset.gender) b.classList.add('active');
-      b.onclick = () => { SV.settings.gender = b.dataset.gender; initWardrobe(); };
+      b.onclick = () => {
+        SV.settings.gender = b.dataset.gender;
+        Store.set('sv_set', SV.settings);
+        refreshHair();
+        render();
+      };
     });
 
-    const sg = qs('#skins-grid'); sg.innerHTML='';
-    SKINS.forEach(s => {
-      const d = document.createElement('div');
-      // --- CRITICAL FIX: Was 'SV.prog' ---
-      const isUnlocked = SV.progress.ach[s.req];
-      d.className = `skin-card ${SV.settings.skin===s.id ? 'selected' : ''} ${isUnlocked ? '' : 'locked'} ${isUnlocked ? s.rarity : ''}`;
-      
-      if (isUnlocked) {
-        d.innerHTML = `<b>${s.name}</b>`;
-        d.onclick = () => { SV.settings.skin = s.id; initWardrobe(); };
-      } else {
-        d.innerHTML = `<b style="font-size:1.5rem; margin-bottom:10px;">???</b><small>Locked</small>`;
-      }
-      sg.appendChild(d);
-    });
+    const sg = qs('#skins-grid'); if (sg) {
+      sg.innerHTML='';
+      const have = SV.progress.ach || {};
+      SKINS.forEach(s => {
+        const d = document.createElement('div');
+        const isUnlocked = !!have[s.req];
+        d.className = `skin-card ${SV.settings.skin===s.id ? 'selected' : ''} ${isUnlocked ? '' : 'locked'} ${isUnlocked ? s.rarity : ''}`;
+        
+        if (isUnlocked) {
+          d.innerHTML = `<b>${s.name}</b>`;
+          d.onclick = () => { SV.settings.skin = s.id; Store.set('sv_set', SV.settings); render(); };
+        } else {
+          d.innerHTML = `<b style="font-size:1.5rem; margin-bottom:10px;">???</b><small>Locked</small>`;
+        }
+        sg.appendChild(d);
+      });
+    }
     
-    qs('#clear-skin-btn').onclick = () => { SV.settings.skin = null; initWardrobe(); };
-    render(); // <-- This line draws the preview
+    const clearBtn = qs('#clear-skin-btn');
+    if (clearBtn) {
+      clearBtn.onclick = () => { SV.settings.skin = null; Store.set('sv_set', SV.settings); render(); };
+    }
+
+    render();
   }
 
   // --- LORE (SNES Art) ---
@@ -494,14 +514,14 @@
 
   function drawLore(){
     const c1 = qs('#lore-canvas-1');
-    if(c1) { c1.getContext('2d').clearRect(0,0,128,128); drawPixelArt(c1.getContext('2d'), ART.troll, 6); }
+    if(c1) { const ctx1 = c1.getContext('2d'); ctx1.clearRect(0,0,128,128); drawPixelArt(ctx1, ART.troll, 6); }
     const c2 = qs('#lore-canvas-2');
-    if(c2) { c2.getContext('2d').clearRect(0,0,128,128); drawPixelArt(c2.getContext('2d'), ART.head, 6); }
+    if(c2) { const ctx2 = c2.getContext('2d'); ctx2.clearRect(0,0,128,128); drawPixelArt(ctx2, ART.head, 6); }
   }
 
   function buildAch() {
-    const grid = qs('#achievements-grid'); grid.innerHTML = '';
-    // --- CRITICAL FIX: Was 'SV.prog' ---
+    const grid = qs('#achievements-grid'); if(!grid) return;
+    grid.innerHTML = '';
     const have = SV.progress.ach || {}; 
     ACHIEVEMENTS.forEach(a => {
       const div = document.createElement('div');
@@ -512,7 +532,6 @@
   }
 
   function award(id) { 
-    // --- CRITICAL FIX: Was 'SV.prog' ---
     if (!SV.progress.ach[id]) { 
       SV.progress.ach[id] = true; 
       Store.set('sv_prog', SV.progress); 
@@ -528,7 +547,7 @@
         if(SV.rpg.hp <= 0) { 
           alert("YOU WON!"); 
           SV.progress.endlessUnlocked=true; 
-          Store.set('sv_prog', SV.progress); // <-- FIX: Was SV.prog
+          Store.set('sv_prog', SV.progress);
           location.reload(); 
         }
       };
