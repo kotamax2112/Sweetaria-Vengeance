@@ -1,5 +1,5 @@
 /* =========================================================
-   SWEETARIA: VENGEANCE — BETA 1.8 CSS
+   SWEETARIA: VENGEANCE — BETA 1.9 CSS
 ========================================================= */
 :root{ --ink:#e6eeff; --bg:#06070d; --panel:#0f1625; --border:#3a4a63; --primary:#4e9cff; --danger:#ff4d62; }
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;}
@@ -40,13 +40,14 @@ button,input{ font-family:inherit; }
 }
 .title-content{ position:relative; z-index:2; text-align:center; pointer-events:none; }
 .game-title{ font-size:2.5rem; text-shadow:0 0 20px #88f; margin-bottom:20px; }
+.sub-title { font-size:0.6em; color:#b8c6e3 }
 .tap-to-start{ animation:blink 1s infinite; }
 
 /* Home */
 #home-screen{ justify-content:center; background:radial-gradient(circle at top,#151b35,#06070d); }
 .home-title{ margin-bottom:20px; margin-top:60px; }
 .menu-buttons{ display:flex; flex-direction:column; align-items:center; width:100%; z-index:5; }
-#dev-trigger{ position:absolute; top:0; left:0; width:150px; height:150px; z-index:100; }
+#dev-trigger-zone{ position:absolute; top:0; left:0; width:150px; height:150px; z-index:100; }
 
 /* Game */
 #game-screen{ background:#0b1220; justify-content:flex-start; padding-top:10px; }
@@ -91,7 +92,7 @@ button,input{ font-family:inherit; }
 .lore-img{ width:128px; height:128px; background:#000; border-radius:8px; border:1px solid #444; image-rendering: pixelated; }
 
 /* Dev Menu */
-.dev-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin:10px 0; }
+.dev-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:10px 0; }
 .dev-btn{ padding:10px; font-size:0.7rem; background:#222; border:1px solid #444; color:#fff; cursor:pointer; }
 
 /* Animations */
