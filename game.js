@@ -602,121 +602,166 @@
     }
   }
 
-  // --- WARDROBE ---
-  function initWardrobe() {
-    const cvs = document.createElement('canvas');
-    cvs.width = 300;
-    cvs.height = 180;
-    qs('#player-preview').innerHTML = '';
-    qs('#player-preview').appendChild(cvs);
-    const ctx = cvs.getContext('2d');
+  // --- WARDROBE (FULLY FIXED VERSION) ---
+function initWardrobe() {
+  const cvs = document.createElement('canvas');
+  cvs.width = 300;
+  cvs.height = 180;
+  qs('#player-preview').innerHTML = '';
+  qs('#player-preview').appendChild(cvs);
+  const ctx = cvs.getContext('2d');
 
-    const render = () => {
-      ctx.clearRect(0, 0, 300, 180);
-      drawPlayerSprite(ctx, 130, 80);
+  const render = () => {
+    ctx.clearRect(0, 0, 300, 180);
+    drawPlayerSprite(ctx, 130, 80);
+  };
+
+  // --- PLAYER NAME ---
+  const nameInput = qs('#player-name-input');
+  if (nameInput) {
+    nameInput.value = SV.settings.playerName || 'Hero';
+    nameInput.onchange = (e) => {
+      SV.settings.playerName = e.target.value || 'Hero';
+      Store.set('sv_set', SV.settings);
+      render();
     };
+  }
 
-    // name
-    const nameInput = qs('#player-name-input');
-    if (nameInput) {
-      nameInput.value = SV.settings.playerName || 'Hero';
-      nameInput.onchange = (e) => {
-        SV.settings.playerName = e.target.value || 'Hero';
+  // --- TABS ---
+  qsa('.wardrobe-tab').forEach(t => {
+    t.onclick = (e) => {
+      qsa('.wardrobe-tab').forEach(x => x.classList.remove('active'));
+      qsa('.wardrobe-content').forEach(c => c.classList.remove('active'));
+
+      e.target.classList.add('active');
+      const content = qs('#' + e.target.dataset.tab);
+      if (content) content.classList.add('active');
+    };
+  });
+
+  // --- UNIVERSAL BUILDER (FIXED) ---
+  const build = (arr, id, prop, isColor, transformDisplay) => {
+    const el = qs('#' + id);
+    if (!el) return;
+    el.innerHTML = '';
+
+    arr.forEach(val => {
+      const b = document.createElement('button');
+
+      if (isColor) {
+        b.className = 'color-swatch';
+        b.style.background = val;
+      } else {
+        b.className = 'item-swatch';
+        b.textContent = transformDisplay ? transformDisplay(val) : val;
+      }
+
+      // highlight active button
+      if (SV.settings[prop] === val) b.classList.add('active');
+
+      b.onclick = () => {
+        // set new setting
+        SV.settings[prop] = val;
+
+        // selecting a shirt cancels skins
+        if (prop === 'shirt') SV.settings.skin = null;
+
         Store.set('sv_set', SV.settings);
-      };
-    }
 
-    // tabs
-    qsa('.wardrobe-tab').forEach(t => {
-      t.onclick = (e) => {
-        qsa('.wardrobe-tab').forEach(x => x.classList.remove('active'));
-        e.target.classList.add('active');
-        qsa('.wardrobe-content').forEach(c => c.classList.remove('active'));
-        const content = qs('#' + e.target.dataset.tab);
-        if (content) content.classList.add('active');
+        // update button states
+        qsa('#' + id + ' button').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+
+        render();
       };
+
+      el.appendChild(b);
     });
+  };
 
-    const build = (arr, id, prop, isColor) => {
-      const el = qs('#' + id);
-      if (!el) return;
-      el.innerHTML = '';
-      arr.forEach(val => {
-        const b = document.createElement('button');
-        if (isColor) {
-          b.className = 'color-swatch';
-          b.style.background = val;
-        } else {
-          b.className = 'item-swatch';
-          b.textContent = val;
-        }
-        if (SV.settings[prop] === val) b.classList.add('active');
-        b.onclick = () => {
-          SV.settings[prop] = val;
-          if (prop === 'shirt') SV.settings.skin = null;
+  // --- HAIR ---
+  const refreshHair = () => {
+    const styles = HAIRS[SV.settings.gender] || HAIRS.m;
+    build(styles, 'hair-options', 'hairStyle', false, s => s.toUpperCase());
+  };
+
+  // --- BUILD OPTIONS ---
+  build(COLORS.shirt, 'shirt-options', 'shirt', true);
+  build(COLORS.pants, 'pants-options', 'pants', true);
+  build(COLORS.skin, 'skin-options', 'skinTone', true);
+
+  // ITEM BUTTONS FIXED (uppercase labels, lowercase stored)
+  build(ITEMS, 'item-options', 'item', false, s => s.toUpperCase());
+
+  refreshHair();
+
+  // --- GENDER BUTTONS ---
+  qsa('.gender-btn').forEach(b => {
+    if (SV.settings.gender === b.dataset.gender) b.classList.add('active');
+
+    b.onclick = () => {
+      SV.settings.gender = b.dataset.gender;
+      Store.set('sv_set', SV.settings);
+
+      qsa('.gender-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+
+      refreshHair();
+      render();
+    };
+  });
+
+  // --- SKINS MENU (FULL FIX) ---
+  const sg = qs('#skins-grid');
+  if (sg) {
+    sg.innerHTML = '';
+    const have = SV.progress.ach || {};
+
+    SKINS.forEach(s => {
+      const unlocked = !!have[s.req];
+      const card = document.createElement('div');
+
+      card.className = `skin-card 
+        ${SV.settings.skin === s.id ? 'selected' : ''} 
+        ${unlocked ? s.rarity : 'locked'}`;
+
+      if (unlocked) {
+        // unlocked skin
+        card.innerHTML = `<b>${s.name}</b>`;
+        card.onclick = () => {
+          SV.settings.skin = s.id;
           Store.set('sv_set', SV.settings);
+
+          qsa('#skins-grid .skin-card').forEach(x => x.classList.remove('selected'));
+          card.classList.add('selected');
+
           render();
         };
-        el.appendChild(b);
-      });
-    };
+      } else {
+        // locked placeholder
+        card.innerHTML = `
+          <b style="font-size:1.5rem; margin-bottom:10px;">???</b>
+          <small>Locked</small>
+        `;
+      }
 
-    const refreshHair = () => {
-      const styles = HAIRS[SV.settings.gender] || HAIRS.m;
-      build(styles, 'hair-options', 'hairStyle', false);
-    };
-
-    build(COLORS.shirt, 'shirt-options', 'shirt', true);
-    build(COLORS.pants, 'pants-options', 'pants', true);
-    build(COLORS.skin, 'skin-options', 'skinTone', true);
-    build(ITEMS, 'item-options', 'item', false);
-    refreshHair();
-
-    // gender
-    qsa('.gender-btn').forEach(b => {
-      if (SV.settings.gender === b.dataset.gender) b.classList.add('active');
-      b.onclick = () => {
-        SV.settings.gender = b.dataset.gender;
-        Store.set('sv_set', SV.settings);
-        refreshHair();
-        render();
-      };
+      sg.appendChild(card);
     });
-
-    // skins
-    const sg = qs('#skins-grid');
-    if (sg) {
-      sg.innerHTML = '';
-      const have = SV.progress.ach || {};
-      SKINS.forEach(s => {
-        const d = document.createElement('div');
-        const isUnlocked = !!have[s.req];
-        d.className = `skin-card ${SV.settings.skin === s.id ? 'selected' : ''} ${isUnlocked ? '' : 'locked'} ${isUnlocked ? s.rarity : ''}`;
-        if (isUnlocked) {
-          d.innerHTML = `<b>${s.name}</b>`;
-          d.onclick = () => {
-            SV.settings.skin = s.id;
-            Store.set('sv_set', SV.settings);
-            render();
-          };
-        } else {
-          d.innerHTML = `<b style="font-size:1.5rem; margin-bottom:10px;">???</b><small>Locked</small>`;
-        }
-        sg.appendChild(d);
-      });
-    }
-
-    const clearBtn = qs('#clear-skin-btn');
-    if (clearBtn) {
-      clearBtn.onclick = () => {
-        SV.settings.skin = null;
-        Store.set('sv_set', SV.settings);
-        render();
-      };
-    }
-
-    render();
   }
+
+  // --- CLEAR SKIN ---
+  const clearBtn = qs('#clear-skin-btn');
+  if (clearBtn) {
+    clearBtn.onclick = () => {
+      SV.settings.skin = null;
+      Store.set('sv_set', SV.settings);
+      qsa('#skins-grid .skin-card').forEach(x => x.classList.remove('selected'));
+      render();
+    };
+  }
+
+  render();
+}
 
   // --- LORE ---
   function drawPixelArt(ctx, map, size) {
