@@ -1,181 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sweetaria: Vengeance</title>
-  <!-- Cache-busted to fight GH Pages CSS caching -->
-  <link rel="stylesheet" href="style.css?v=4">
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=ui-overhaul-1" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
 </head>
 <body>
-
 <div id="page-root">
   <div id="game-container">
 
-    <!-- TITLE SCREEN -->
+    <!-- =========================
+         TITLE SCREEN
+    ========================== -->
     <div id="title-screen">
-      <h1>SWEETARIA: VENGEANCE</h1>
-      <p>CLICK TO START</p>
-    </div>
+      <div class="title-bg-layer title-bg-layer-1"></div>
+      <div class="title-bg-layer title-bg-layer-2"></div>
 
-    <!-- HOME MENU -->
-    <div id="home-screen" class="hidden">
-      <h2 class="home-title">MAIN MENU</h2>
-      <div class="home-buttons">
-        <button id="play-btn" class="menu-btn">STORY MODE</button>
-        <button id="endless-btn" class="menu-btn">ENDLESS RUN</button>
-        <button id="wardrobe-btn" class="menu-btn">WARDROBE</button>
-        <button id="lore-btn" class="menu-btn">LORE</button>
-        <button id="achievements-btn" class="menu-btn">AWARDS</button>
-        <button id="share-btn" class="menu-btn">SHARE</button>
-        <button id="settings-btn" class="menu-btn">SETTINGS</button>
-        <button id="logout-btn" class="menu-btn">LOGOUT</button>
+      <div class="title-content">
+        <h1 class="game-title">
+          <span class="title-main">SWEETARIA:</span><br />
+          <span class="title-sub">VENGEANCE</span>
+        </h1>
+        <p class="title-tagline">A pixel runner of petty revenge.</p>
+        <p class="title-cta">TAP TO BEGIN</p>
       </div>
     </div>
 
-    <!-- GAME SCREEN -->
-    <div id="game-screen" class="hidden">
-      <canvas id="game-canvas" width="800" height="480"></canvas>
+    <!-- =========================
+         HOME / MAIN MENU
+    ========================== -->
+    <div id="home-screen" class="hidden">
+      <div class="home-overlay"></div>
+      <div class="home-shell">
+        <header class="home-header">
+          <h2 class="home-title">WELCOME TO SWEETARIA</h2>
+          <button id="settings-btn" class="icon-btn gear-btn" title="Settings">
+            ⚙
+          </button>
+        </header>
 
+        <main class="home-main">
+          <div class="home-menu">
+            <button id="play-btn" class="menu-btn primary">PLAY GAME</button>
+            <button id="endless-btn" class="menu-btn">ENDLESS RUN</button>
+            <button id="wardrobe-btn" class="menu-btn">WARDROBE</button>
+            <button id="lore-btn" class="menu-btn">LORE</button>
+            <button id="achievements-btn" class="menu-btn">ACHIEVEMENTS</button>
+            <button id="share-btn" class="menu-btn">SHARE THIS GAME</button>
+            <button id="logout-btn" class="menu-btn subtle">RETURN TO TITLE</button>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- =========================
+         GAME SCREEN
+    ========================== -->
+    <div id="game-screen" class="hidden">
       <!-- HUD -->
       <div id="hud">
         <div class="hud-left">
+          <span class="hud-label">Runner</span>
           <span id="player-name-display" class="hud-name">Hero</span>
         </div>
+
+        <div class="hud-center">
+          <div class="hud-chips">
+            <div class="chip chip-level">
+              <span class="chip-label">LVL</span>
+              <span id="level-label" class="chip-value">1</span>
+            </div>
+          </div>
+          <div id="level-progress">
+            <div id="level-progress-fill"></div>
+          </div>
+        </div>
+
         <div class="hud-right">
-          <span class="hud-label">SCORE</span>
-          <span id="score-display" class="hud-value">0</span>
-          <span class="hud-label">BEST</span>
-          <span id="alltime-display" class="hud-value">0</span>
-          <button id="pause-btn" class="btn small hud-pause">II</button>
+          <div class="chip">
+            <span class="chip-label">SCORE</span>
+            <span id="score-display" class="chip-value">0</span>
+          </div>
+          <div class="chip">
+            <span class="chip-label">BEST</span>
+            <span id="alltime-display" class="chip-value">0</span>
+          </div>
+          <button id="pause-btn" class="btn btn-square hud-pause" title="Pause">II</button>
         </div>
       </div>
 
+      <!-- Game Canvas -->
+      <div class="canvas-shell">
+        <canvas id="game-canvas" width="800" height="480"></canvas>
+      </div>
+
+      <!-- Jump button (mobile friendly) -->
       <button id="jump-btn" class="btn jump-btn">JUMP</button>
 
-      <!-- Hidden dev click area -->
+      <!-- Dev menu trigger area -->
       <div id="dev-trigger-zone"></div>
     </div>
 
+    <!-- =========================
+         POPUPS & PANELS
+    ========================== -->
+
     <!-- START POPUP -->
     <div id="start-popup" class="popup hidden">
-      <div class="panel">
-        <h3>START RUN</h3>
-        <p class="panel-text">Choose where to begin.</p>
+      <div class="panel panel-small">
+        <h3 class="panel-title">CONTINUE RUN?</h3>
+        <p class="panel-text">
+          You have a saved checkpoint. Would you like to continue from there or start from the very beginning?
+        </p>
         <div class="panel-buttons">
-          <button id="start-at-last" class="btn">LAST CHECKPOINT</button>
-          <button id="start-beginning" class="btn">FROM START</button>
+          <button id="start-at-last" class="btn wide">LAST CHECKPOINT</button>
+          <button id="start-beginning" class="btn wide secondary">START FROM BEGINNING</button>
         </div>
-        <button class="close-btn">X</button>
+        <button class="close-btn">✕</button>
       </div>
     </div>
 
     <!-- DEATH POPUP -->
     <div id="death-popup" class="popup hidden">
-      <div class="panel">
-        <h3>YOU DIED</h3>
-        <p class="panel-text">Try again or return to the menu.</p>
+      <div class="panel panel-small">
+        <h3 class="panel-title">YOU FELL IN SWEETARIA</h3>
+        <p class="panel-text">
+          The run is over, but the petty revenge never dies. Try again or head back to the menu.
+        </p>
         <div class="panel-buttons">
-          <button id="death-restart-checkpoint" class="btn">RETRY</button>
-          <button id="death-exit-main" class="btn">EXIT</button>
+          <button id="death-restart-checkpoint" class="btn wide">RESTART FROM CHECKPOINT</button>
+          <button id="death-exit-main" class="btn wide secondary">EXIT TO MAIN MENU</button>
         </div>
-        <button class="close-btn">X</button>
+        <button class="close-btn">✕</button>
       </div>
     </div>
 
     <!-- SHARE POPUP -->
     <div id="share-popup" class="popup hidden">
-      <div class="panel">
-        <h3>SHARE SWEETARIA</h3>
-        <p class="panel-text small-text">Copy this link and send it to your friends.</p>
-        <input id="share-link" type="text" class="text-input" value="https://kotamax2112.github.io/Sweetaria-Vengeance/">
+      <div class="panel panel-small">
+        <h3 class="panel-title">SHARE SWEETARIA</h3>
+        <p class="panel-text small">
+          Copy this link and send it to someone who deserves a cursed runner.
+        </p>
+        <input id="share-link" class="text-input" type="text"
+               value="https://kotamax2112.github.io/Sweetaria-Vengeance/" readonly />
         <div class="panel-buttons">
-          <button id="copy-share-btn" class="btn">COPY LINK</button>
+          <button id="copy-share-btn" class="btn wide">COPY TO CLIPBOARD</button>
         </div>
-        <button class="close-btn">X</button>
+        <button class="close-btn">✕</button>
       </div>
     </div>
 
     <!-- SETTINGS POPUP -->
     <div id="settings-popup" class="popup hidden">
-      <div class="panel">
-        <h3>SETTINGS</h3>
-        <div class="settings-row">
-          <button id="music-toggle" class="btn wide">Music: ON</button>
+      <div class="panel panel-medium">
+        <h3 class="panel-title">SETTINGS</h3>
+        <div class="panel-section">
+          <button id="music-toggle" class="btn wide">MUSIC: ON</button>
           <button id="sfx-toggle" class="btn wide">SFX: ON</button>
         </div>
-        <div class="settings-row">
-          <button id="reset-progress-btn" class="btn danger wide">RESET PROGRESS</button>
+        <div class="panel-section">
+          <button id="reset-progress-btn" class="btn wide danger">RESET PROGRESS</button>
         </div>
-        <div class="settings-row">
-          <button id="open-credits-btn" class="btn wide">CREDITS</button>
+        <div class="panel-section">
+          <button id="open-credits-btn" class="btn wide secondary">CREDITS</button>
         </div>
-        <button class="close-btn">X</button>
+        <button class="close-btn">✕</button>
       </div>
     </div>
 
     <!-- CREDITS POPUP -->
     <div id="credits-popup" class="popup hidden">
-      <div class="panel">
-        <h3>CREDITS</h3>
-        <p class="panel-text small-text">
-          SWEETARIA: VENGEANCE<br>
-          Design &amp; Code: Dakota / ChatGPT<br>
-          Art &amp; Chaos: Sweetaria Crew
-        </p>
+      <div class="panel panel-small">
+        <h3 class="panel-title">CREDITS</h3>
+        <div class="panel-text credits-text">
+          <p>Design &amp; Direction: Dakota</p>
+          <p>Programming: Dakota &amp; ChatGPT</p>
+          <p>Art &amp; Chaos: Sweetaria Crew</p>
+          <p>QA &amp; Trolling: Teen Troll</p>
+          <p>Executive Producer: Pure Spite</p>
+        </div>
         <div class="panel-buttons">
           <button id="return-title-btn" class="btn wide">RETURN TO TITLE</button>
         </div>
-        <button class="close-btn">X</button>
+        <button class="close-btn">✕</button>
       </div>
     </div>
 
     <!-- PAUSE MENU -->
     <div id="pause-menu" class="popup hidden">
-      <div class="panel">
-        <h3>PAUSED</h3>
+      <div class="panel panel-small">
+        <h3 class="panel-title">PAUSED</h3>
         <div class="panel-buttons">
           <button id="resume-btn" class="btn wide">RESUME</button>
-          <button id="pause-music-btn" class="btn wide">Music: ON</button>
+          <button id="pause-music-btn" class="btn wide">MUSIC: ON</button>
           <button id="pause-sfx-btn" class="btn wide">SFX: ON</button>
-          <button id="quit-btn" class="btn danger wide">QUIT TO TITLE</button>
+          <button id="quit-btn" class="btn wide danger">QUIT TO TITLE</button>
         </div>
-        <button class="close-btn">X</button>
-      </div>
-    </div>
-
-    <!-- RPG OVERLAY (simple placeholder for now, JS just toggles it) -->
-    <div id="rpg-overlay" class="popup hidden">
-      <div class="panel">
-        <h3>BOSS BATTLE</h3>
-        <p class="panel-text small-text">Face the boss and survive.</p>
-        <button class="close-btn">X</button>
+        <button class="close-btn">✕</button>
       </div>
     </div>
 
     <!-- WARDROBE POPUP -->
     <div id="wardrobe-popup" class="popup hidden">
       <div class="panel panel-wardrobe">
-        <button class="close-btn">X</button>
+        <button class="close-btn">✕</button>
+        <h3 class="panel-title">WARDROBE</h3>
 
-        <!-- PLAYER PREVIEW -->
+        <!-- Preview -->
         <div id="player-preview"></div>
 
-        <!-- TABS -->
+        <!-- Tabs -->
         <div class="wardrobe-tabs">
-          <button class="wardrobe-tab active" data-tab="tab-colors">COLORS</button>
-          <button class="wardrobe-tab" data-tab="tab-hair">HAIR</button>
-          <button class="wardrobe-tab" data-tab="tab-items">ITEMS</button>
+          <button class="wardrobe-tab active" data-tab="tab-appearance">APPEARANCE</button>
           <button class="wardrobe-tab" data-tab="tab-skins">SKINS</button>
         </div>
 
-        <!-- COLORS TAB -->
-        <div id="tab-colors" class="wardrobe-content active">
-          <div class="fields-grid">
-            <div class="field">
+        <!-- APPEARANCE TAB -->
+        <div id="tab-appearance" class="wardrobe-content active">
+          <div class="appearance-grid">
+            <div class="field field-full">
               <label for="player-name-input">Name</label>
-              <input id="player-name-input" type="text" maxlength="12" class="text-input">
+              <input id="player-name-input" type="text" maxlength="12" class="text-input" />
             </div>
 
             <div class="field">
@@ -193,7 +241,17 @@
               <div id="skin-options" class="color-options"></div>
             </div>
 
-            <div class="field">
+            <div class="field field-full">
+              <label>Hair Style</label>
+              <div id="hair-options" class="item-row"></div>
+            </div>
+
+            <div class="field field-full">
+              <label>Held Item</label>
+              <div id="item-options" class="item-row"></div>
+            </div>
+
+            <div class="field field-gender">
               <label>Gender</label>
               <div class="gender-row">
                 <button class="btn tiny gender-btn" data-gender="m">M</button>
@@ -204,34 +262,33 @@
           </div>
         </div>
 
-        <!-- HAIR TAB -->
-        <div id="tab-hair" class="wardrobe-content">
-          <div id="hair-options" class="item-row"></div>
-        </div>
-
-        <!-- ITEMS TAB -->
-        <div id="tab-items" class="wardrobe-content">
-          <div id="item-options" class="item-row"></div>
-        </div>
-
         <!-- SKINS TAB -->
         <div id="tab-skins" class="wardrobe-content">
-          <p class="skins-note">Unlock skins by completing Awards.</p>
+          <p class="skins-note">
+            Unlock skins by completing Awards. Legendary vanity for petty deeds.
+          </p>
           <div id="skins-grid" class="skins-grid"></div>
-          <button id="clear-skin-btn" class="btn small" style="margin-top:12px;">UNEQUIP SKIN</button>
+          <div class="panel-buttons skins-actions">
+            <button id="clear-skin-btn" class="btn small">UNEQUIP SKIN</button>
+          </div>
         </div>
-
       </div>
     </div>
 
     <!-- LORE POPUP -->
     <div id="lore-popup" class="popup hidden">
       <div class="panel panel-lore">
-        <button class="close-btn">X</button>
-        <h3>LORE</h3>
+        <button class="close-btn">✕</button>
+        <h3 class="panel-title">LORE OF SWEETARIA</h3>
         <div class="lore-grid">
-          <canvas id="lore-canvas-1" width="128" height="128"></canvas>
-          <canvas id="lore-canvas-2" width="128" height="128"></canvas>
+          <div class="lore-card">
+            <canvas id="lore-canvas-1" width="128" height="128"></canvas>
+            <p class="lore-caption">Teen Troll — first boss, worst vibes.</p>
+          </div>
+          <div class="lore-card">
+            <canvas id="lore-canvas-2" width="128" height="128"></canvas>
+            <p class="lore-caption">Big Boss Head — the final argument.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -239,33 +296,60 @@
     <!-- ACHIEVEMENTS POPUP -->
     <div id="achievements-popup" class="popup hidden">
       <div class="panel panel-achievements">
-        <button class="close-btn">X</button>
-        <h3>AWARDS</h3>
+        <button class="close-btn">✕</button>
+        <h3 class="panel-title">ACHIEVEMENTS</h3>
         <div id="achievements-grid" class="achievements-grid"></div>
+      </div>
+    </div>
+
+    <!-- RPG OVERLAY (Boss Battle) -->
+    <div id="rpg-overlay" class="popup hidden">
+      <div class="panel panel-rpg">
+        <button class="close-btn">✕</button>
+        <div class="rpg-header">
+          <div class="boss-portrait">😈</div>
+          <div class="boss-info">
+            <div class="boss-name">BIG BOSS HEAD</div>
+            <div class="boss-hp-bar">
+              <div class="boss-hp-fill"></div>
+            </div>
+          </div>
+        </div>
+        <div class="rpg-actions">
+          <button class="btn tiny">FACT CHECK</button>
+          <button class="btn tiny">MEME REPLY</button>
+          <button class="btn tiny">BLOCK</button>
+          <button class="btn tiny">LOG OUT</button>
+          <button class="btn tiny">SELF CARE</button>
+          <button class="btn tiny">KINDNESS</button>
+        </div>
+        <div class="rpg-log" id="rpg-log">
+          <!-- JS can optionally append log lines here -->
+        </div>
       </div>
     </div>
 
     <!-- DEV MENU -->
     <div id="dev-menu" class="popup hidden">
       <div class="panel panel-dev">
-        <button class="close-btn">X</button>
-        <h3>DEV MENU</h3>
-        <div class="panel-buttons">
-          <div class="dev-section">
-            <span class="dev-label">Jump to Level</span>
-            <div class="dev-row">
-              <button class="dev-btn btn tiny" data-level="1">LV1</button>
-              <button class="dev-btn btn tiny" data-level="2">LV2</button>
-              <button class="dev-btn btn tiny" data-level="3">LV3</button>
-            </div>
+        <button class="close-btn">✕</button>
+        <h3 class="panel-title">DEV MENU</h3>
+
+        <div class="panel-section">
+          <h4 class="panel-subtitle">Jump to Level</h4>
+          <div class="dev-row">
+            <button class="dev-btn btn tiny" data-level="1">LV1</button>
+            <button class="dev-btn btn tiny" data-level="2">LV2</button>
+            <button class="dev-btn btn tiny" data-level="3">LV3</button>
           </div>
-          <div class="dev-section">
-            <span class="dev-label">Powers</span>
-            <div class="dev-row">
-              <button class="btn tiny" data-power="shield">SHIELD</button>
-              <button class="btn tiny" data-power="jetpack">JETPACK</button>
-              <button class="btn tiny" data-power="tesla">TESLA</button>
-            </div>
+        </div>
+
+        <div class="panel-section">
+          <h4 class="panel-subtitle">Powers</h4>
+          <div class="dev-row">
+            <button class="btn tiny" data-power="shield">Shield</button>
+            <button class="btn tiny" data-power="jetpack">Jetpack</button>
+            <button class="btn tiny" data-power="tesla">Tesla</button>
           </div>
         </div>
       </div>
