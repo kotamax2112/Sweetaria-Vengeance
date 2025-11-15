@@ -347,3 +347,34 @@ canvas {
   outline: 3px solid #4ea8ff !important;
   box-shadow: 0 0 6px #4ea8ff !important;
 }
+
+/* ============================================================
+   WARDROBE — SAFE SCOPED FIX FOR ACTIVE HIGHLIGHTS
+   ============================================================ */
+
+/* Hair + Held Item + Item Rows */
+#wardrobe-popup .item-row button.active {
+  background-color: #4ea8ff !important;
+  color: #000 !important;
+  outline: 3px solid #4ea8ff !important;
+  box-shadow: 0 0 6px #4ea8ff !important;
+}
+
+/* Gender buttons only */
+#wardrobe-popup .gender-btn.active {
+  background-color: #4ea8ff !important;
+  color: #000 !important;
+  border-color: #4ea8ff !important;
+}
+
+/* Color swatches */
+#wardrobe-popup .color-options .color-swatch.active {
+  outline: 3px solid #4ea8ff !important;
+}
+
+/* Skins */
+#wardrobe-popup #skins-grid .skin-card.selected {
+  border: 3px solid #4ea8ff !important;
+  outline: 3px solid #4ea8ff !important;
+  box-shadow: 0 0 6px #4ea8ff !important;
+}
