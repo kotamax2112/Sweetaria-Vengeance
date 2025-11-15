@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sweetaria: Vengeance</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="game-container">
+
+  <!-- TITLE SCREEN -->
+  <div id="title-screen">
+    <h1>SWEETARIA: VENGEANCE</h1>
+    <p>Click to Start</p>
+  </div>
+
+  <!-- HOME MENU -->
+  <div id="home-screen" class="hidden">
+    <button id="play-btn" class="menu-btn">STORY MODE</button>
+    <button id="endless-btn" class="menu-btn">ENDLESS RUN</button>
+    <button id="wardrobe-btn" class="menu-btn">WARDROBE</button>
+    <button id="lore-btn" class="menu-btn">LORE</button>
+    <button id="achievements-btn" class="menu-btn">AWARDS</button>
+    <button id="share-btn" class="menu-btn">SHARE</button>
+    <button id="logout-btn" class="menu-btn">LOGOUT</button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="hidden">
+    <canvas id="game-canvas" width="800" height="480"></canvas>
+    <div id="hud">
+      <span id="score-display">0</span>
+      <span id="alltime-display">0</span>
+    </div>
+    <button id="jump-btn">JUMP</button>
+    <div id="dev-trigger-zone" style="position:absolute;left:0;top:0;width:60px;height:60px;"></div>
+  </div>
+
+  <!-- START POPUP -->
+  <div id="start-popup" class="popup hidden">
+    <button id="start-at-last" class="btn">LAST CHECKPOINT</button>
+    <button id="start-beginning" class="btn">FROM START</button>
+    <button class="close-btn">X</button>
+  </div>
+
+  <!-- DEATH POPUP -->
+  <div id="death-popup" class="popup hidden">
+    <h3>You Died!</h3>
+    <button id="death-restart-checkpoint" class="btn">RETRY</button>
+    <button id="death-exit-main" class="btn">EXIT</button>
+    <button class="close-btn">X</button>
+  </div>
+
+  <!-- SHARE POPUP -->
+  <div id="share-popup" class="popup hidden">
+    <input id="share-link" value="https://kotamax2112.github.io/Sweetaria-Vengeance/">
+    <button id="copy-share-btn" class="btn">COPY LINK</button>
+    <button class="close-btn">X</button>
+  </div>
+
+  <!-- WARDROBE POPUP -->
+  <div id="wardrobe-popup" class="popup hidden">
+    <button class="close-btn">X</button>
+
+    <div id="player-preview"></div>
+
+    <div class="wardrobe-tabs">
+      <div class="wardrobe-tab active" data-tab="tab-colors">COLORS</div>
+      <div class="wardrobe-tab" data-tab="tab-hair">HAIR</div>
+      <div class="wardrobe-tab" data-tab="tab-items">ITEMS</div>
+      <div class="wardrobe-tab" data-tab="tab-skins">SKINS</div>
+    </div>
+
+    <!-- COLORS -->
+    <div id="tab-colors" class="wardrobe-content active">
+      <div class="field">
+        <label>Name</label>
+        <input id="player-name-input" type="text">
+      </div>
+
+      <div class="field">
+        <label>Shirt</label>
+        <div id="shirt-options" class="color-options"></div>
+      </div>
+
+      <div class="field">
+        <label>Pants</label>
+        <div id="pants-options" class="color-options"></div>
+      </div>
+
+      <div class="field">
+        <label>Skin</label>
+        <div id="skin-options" class="color-options"></div>
+      </div>
+
+      <div class="field">
+        <label>Gender</label>
+        <button class="gender-btn" data-gender="m">M</button>
+        <button class="gender-btn" data-gender="f">F</button>
+        <button class="gender-btn" data-gender="o">O</button>
+      </div>
+    </div>
+
+    <!-- HAIR -->
+    <div id="tab-hair" class="wardrobe-content">
+      <div id="hair-options" class="item-row"></div>
+    </div>
+
+    <!-- ITEMS -->
+    <div id="tab-items" class="wardrobe-content">
+      <div id="item-options" class="item-row"></div>
+    </div>
+
+    <!-- SKINS -->
+    <div id="tab-skins" class="wardrobe-content">
+      <button id="clear-skin-btn" class="btn small">CLEAR</button>
+      <div id="skins-grid"></div>
+    </div>
+
+  </div>
+
+  <!-- LORE POPUP -->
+  <div id="lore-popup" class="popup hidden">
+    <button class="close-btn">X</button>
+    <canvas id="lore-canvas-1" width="128" height="128"></canvas>
+    <canvas id="lore-canvas-2" width="128" height="128"></canvas>
+  </div>
+
+  <!-- ACHIEVEMENTS POPUP -->
+  <div id="achievements-popup" class="popup hidden">
+    <button class="close-btn">X</button>
+    <div id="achievements-grid"></div>
+  </div>
+
+  <!-- DEV MENU -->
+  <div id="dev-menu" class="popup hidden">
+    <button class="close-btn">X</button>
+    <button class="dev-btn" data-level="1">LV1</button>
+    <button class="dev-btn" data-level="2">LV2</button>
+    <button class="dev-btn" data-level="3">LV3</button>
+
+    <button class="btn" data-power="shield">Shield</button>
+    <button class="btn" data-power="jetpack">Jetpack</button>
+    <button class="btn" data-power="tesla">Tesla</button>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
