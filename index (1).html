@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sweetaria: Vengeance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="game-container">
+
+  <!-- TITLE -->
+  <div id="title-screen">
+    <h1>SWEETARIA: VENGEANCE</h1>
+    <p>CLICK TO START</p>
+  </div>
+
+  <!-- HOME MENU -->
+  <div id="home-screen" class="hidden">
+    <h2>MAIN MENU</h2>
+    <button id="play-btn" class="menu-btn">STORY MODE</button>
+    <button id="endless-btn" class="menu-btn">ENDLESS RUN</button>
+    <button id="wardrobe-btn" class="menu-btn">WARDROBE</button>
+    <button id="lore-btn" class="menu-btn">LORE</button>
+    <button id="achievements-btn" class="menu-btn">AWARDS</button>
+    <button id="share-btn" class="menu-btn">SHARE</button>
+    <button id="return-title-btn" class="menu-btn">LOGOUT</button>
+  </div>
+
+  <!-- GAME -->
+  <div id="game-screen" class="hidden">
+    <canvas id="game-canvas" width="800" height="480"></canvas>
+
+    <div id="hud">
+      <span>SCORE: <span id="score-display">0</span></span>
+      <span>ALL-TIME: <span id="alltime-display">0</span></span>
+      <button id="pause-btn" class="btn small">PAUSE</button>
+    </div>
+
+    <button id="jump-btn" class="btn jump">JUMP</button>
+    <div id="dev-trigger-zone"></div>
+  </div>
+
+  <!-- POPUP TEMPLATES -->
+  <div id="start-popup" class="popup hidden">
+    <h2>START RUN?</h2>
+    <button id="start-at-last" class="btn">CONTINUE</button>
+    <button id="start-beginning" class="btn">NEW RUN</button>
+    <button class="btn close-btn">X</button>
+  </div>
+
+  <div id="pause-menu" class="popup hidden">
+    <h2>PAUSED</h2>
+    <button id="resume-btn" class="btn">RESUME</button>
+    <button id="quit-btn" class="btn">QUIT</button>
+    <button class="btn close-btn">X</button>
+  </div>
+
+  <div id="death-popup" class="popup hidden">
+    <h2>YOU DIED</h2>
+    <button id="death-restart-checkpoint" class="btn">RESTART</button>
+    <button id="death-exit-main" class="btn">EXIT</button>
+    <button class="btn close-btn">X</button>
+  </div>
+
+  <!-- SHARE -->
+  <div id="share-popup" class="popup hidden">
+    <h2>SHARE</h2>
+    <input id="share-link" type="text" value="https://kotamax2112.github.io/Sweetaria-Vengeance/">
+    <button id="copy-share-btn" class="btn">COPY LINK</button>
+    <button class="btn close-btn">X</button>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settings-popup" class="popup hidden">
+    <h2>SETTINGS</h2>
+    <button id="music-toggle" class="btn"></button>
+    <button id="sfx-toggle" class="btn"></button>
+    <button id="reset-progress-btn" class="btn danger">RESET DATA</button>
+    <button id="open-credits-btn" class="btn">CREDITS</button>
+    <button class="btn close-btn">X</button>
+  </div>
+
+  <div id="credits-popup" class="popup hidden">
+    <h2>CREDITS</h2>
+    <p>Sweetaria by Dakota Max<br>Code by ChatGPT</p>
+    <button class="btn close-btn">X</button>
+  </div>
+
+  <!-- LORE -->
+  <div id="lore-popup" class="popup hidden">
+    <h2>LORE</h2>
+    <canvas id="lore-canvas-1" width="128" height="128"></canvas>
+    <canvas id="lore-canvas-2" width="128" height="128"></canvas>
+    <button class="btn close-btn">X</button>
+  </div>
+
+  <!-- AWARDS -->
+  <div id="achievements-popup" class="popup hidden">
+    <h2>AWARDS</h2>
+    <div id="achievements-grid"></div>
+    <button class="btn close-btn">X</button>
+  </div>
+
+  <!-- DEV MENU -->
+  <div id="dev-menu" class="popup hidden">
+    <h2>DEV MENU</h2>
+    <button data-level="1" class="dev-btn btn">LEVEL 1</button>
+    <button data-level="2" class="dev-btn btn">LEVEL 2</button>
+    <button data-level="3" class="dev-btn btn">LEVEL 3</button>
+
+    <h3>POWERS</h3>
+    <button class="btn" data-power="shield">SHIELD</button>
+    <button class="btn" data-power="tesla">TESLA</button>
+    <button class="btn" data-power="jetpack">JETPACK</button>
+    <button class="btn close-btn">X</button>
+  </div>
+
+  <!-- WARDROBE -->
+  <div id="wardrobe-popup" class="popup hidden">
+    <h3>WARDROBE</h3>
+    <div id="player-preview"></div>
+
+    <div class="wardrobe-tabs">
+      <button class="wardrobe-tab active" data-tab="content-gear">Gear</button>
+      <button class="wardrobe-tab" data-tab="content-skins">Skins</button>
+    </div>
+
+    <div id="content-gear" class="wardrobe-content active scroll-col">
+
+      <div class="field">
+        <label>Name</label>
+        <input id="player-name-input" type="text" maxlength="12">
+      </div>
+
+      <div class="field">
+        <label>Gender</label>
+        <div class="item-row">
+          <button class="btn gender-btn" data-gender="m">Male</button>
+          <button class="btn gender-btn" data-gender="f">Female</button>
+          <button class="btn gender-btn" data-gender="o">Other</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Hair Style</label>
+        <div id="hair-options" class="item-row"></div>
+      </div>
+
+      <div class="field">
+        <label>Skin Tone</label>
+        <div id="skin-options" class="color-options"></div>
+      </div>
+
+      <div class="field">
+        <label>Shirt Color</label>
+        <div id="shirt-options" class="color-options"></div>
+      </div>
+
+      <div class="field">
+        <label>Pants Color</label>
+        <div id="pants-options" class="color-options"></div>
+      </div>
+
+      <div class="field">
+        <label>Held Item</label>
+        <div id="item-options" class="item-row"></div>
+      </div>
+
+    </div>
+
+    <div id="content-skins" class="wardrobe-content scroll-col">
+      <p class="skins-note">Unlock skins by completing Awards.</p>
+      <div id="skins-grid" class="skins-grid"></div>
+      <button id="clear-skin-btn" class="btn small">Unequip Skin</button>
+    </div>
+
+    <button class="btn secondary close-btn" style="margin-top:15px;">Save & Close</button>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
