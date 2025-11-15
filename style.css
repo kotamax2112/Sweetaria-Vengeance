@@ -1,237 +1,536 @@
 /* =========================================================
-   GLOBAL RESET
+   GLOBAL
 ========================================================= */
 
 * {
   box-sizing: border-box;
   user-select: none;
 }
-body {
+
+html, body {
   margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
   background: #05060b;
   font-family: "Press Start 2P", monospace;
   color: #fff;
 }
-.hidden { display: none !important; }
+
+/* Container that lets us scale for mobile */
+#page-root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12px;
+}
 
 /* =========================================================
-   GAME CONTAINER
+   GAME CONTAINER + SCALING
 ========================================================= */
+
 #game-container {
+  position: relative;
   width: 800px;
   height: 480px;
-  margin: 0 auto;
   background: #000;
-  position: relative;
+  border: 4px solid #111827;
   overflow: hidden;
-  border: 4px solid #222;
+  transform-origin: top center;
 }
-canvas { display: block; }
+
+/* Scale down on smaller screens */
+@media (max-width: 900px) {
+  #game-container {
+    transform: scale(calc(100vw / 840));
+  }
+}
+
+@media (max-height: 550px) {
+  #game-container {
+    transform: scale(calc(100vh / 520));
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Canvas should fill container area under HUD */
+#game-canvas {
+  display: block;
+}
 
 /* =========================================================
-   TITLE
+   COLORS / COMMON
 ========================================================= */
+
+:root {
+  --blue-main: #3b82f6;    /* slightly softer modern blue (B2) */
+  --blue-dark: #1e3a8a;
+  --blue-soft: #172554;
+  --bg-panel: #020617;
+  --bg-panel-deep: #020617;
+  --border-subtle: #1f2937;
+  --danger: #f97373;
+}
+
+/* Generic buttons */
+.btn,
+.menu-btn {
+  padding: 10px 16px;
+  border: 2px solid var(--blue-main);
+  background: var(--blue-soft);
+  color: #fff;
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.btn:hover,
+.menu-btn:hover {
+  background: var(--blue-main);
+  color: #000;
+}
+
+.btn.small {
+  padding: 6px 10px;
+  font-size: 9px;
+}
+
+.btn.tiny {
+  padding: 4px 8px;
+  font-size: 8px;
+}
+
+.btn.wide {
+  width: 100%;
+  justify-content: center;
+}
+
+.btn.danger {
+  border-color: var(--danger);
+  background: #3f1616;
+}
+
+.text-input {
+  padding: 6px 8px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
+  background: #020617;
+  border: 2px solid var(--blue-main);
+  color: #fff;
+  width: 100%;
+}
+
+/* =========================================================
+   TITLE SCREEN
+========================================================= */
+
 #title-screen {
   position: absolute;
   inset: 0;
-  background: #060910;
+  background: radial-gradient(circle at top, #1e293b 0, #020617 60%);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
   cursor: pointer;
 }
+
 #title-screen h1 {
-  font-size: 38px;
-  margin-bottom: 40px;
+  font-size: 26px;
+  margin-bottom: 32px;
+}
+
+#title-screen p {
+  font-size: 10px;
+  letter-spacing: 2px;
 }
 
 /* =========================================================
    HOME MENU
 ========================================================= */
+
 #home-screen {
   position: absolute;
   inset: 0;
-  padding: 30px;
+  padding: 32px;
+  background: #020617;
 }
-.menu-btn {
-  padding: 16px;
-  background: #111a2a;
-  border: 3px solid #4ea8ff;
-  font-size: 16px;
-  cursor: pointer;
-  margin-right: 10px;
+
+.home-title {
+  margin: 0 0 24px 0;
+  font-size: 14px;
 }
-.menu-btn:hover { background: #173454; }
+
+.home-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* On smaller widths, stack menu buttons */
+@media (max-width: 900px) {
+  .home-buttons {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .menu-btn {
+    width: 100%;
+    text-align: left;
+  }
+}
 
 /* =========================================================
-   POPUPS
+   HUD + GAME OVERLAY
 ========================================================= */
+
+#hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(2, 6, 23, 0.9);
+  border-bottom: 2px solid var(--blue-main);
+}
+
+.hud-left,
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-name {
+  font-size: 10px;
+}
+
+.hud-label {
+  font-size: 8px;
+  opacity: 0.7;
+}
+
+.hud-value {
+  font-size: 10px;
+}
+
+.hud-pause {
+  padding: 4px 8px;
+}
+
+/* Jump button */
+.jump-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+}
+
+/* Dev trigger hitbox */
+#dev-trigger-zone {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 60px;
+  height: 60px;
+}
+
+/* =========================================================
+   POPUPS (GENERIC)
+========================================================= */
+
 .popup {
   position: absolute;
-  inset: 40px;
-  background: #0a0f18;
-  border: 3px solid #4ea8ff;
-  padding: 20px;
-  overflow-y: auto;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.panel {
+  position: relative;
+  width: 90%;
+  max-width: 520px;
+  background: var(--bg-panel);
+  border: 3px solid var(--blue-main);
+  padding: 18px 18px 24px;
+  box-shadow: 0 0 12px #000;
+}
+
+.panel h3 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+}
+
+.panel-text {
+  font-size: 10px;
+  margin: 0 0 16px 0;
+}
+
+.panel-text.small-text {
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.panel-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-row {
+  margin-bottom: 10px;
+}
+
 .close-btn {
   position: absolute;
   top: 6px;
   right: 6px;
-  padding: 8px 10px;
-  background: #4ea8ff;
-  border: 2px solid #fff;
-  color: #000;
+  padding: 4px 8px;
+  font-size: 8px;
+  border: 2px solid var(--blue-main);
+  background: #020617;
+  color: #fff;
   cursor: pointer;
 }
 
 /* =========================================================
-   WARDROBE BASE
+   WARDROBE (POLISHED LAYOUT)
 ========================================================= */
-#player-preview {
-  width: 300px;
-  height: 180px;
-  margin: 0 auto 20px auto;
-  border: 3px solid #4ea8ff;
-  background: #111;
+
+.panel-wardrobe {
+  max-width: 700px;
 }
 
+/* Player preview centered, P1 (same size but clean) */
+#player-preview {
+  width: 100%;
+  max-width: 320px;
+  height: 190px;
+  margin: 4px auto 16px;
+  border: 3px solid var(--blue-main);
+  background: #020617;
+}
+
+/* Tabs - option T2 (larger, evenly spaced) */
 .wardrobe-tabs {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
+
 .wardrobe-tab {
-  padding: 10px 12px;
-  background: #172030;
-  border: 2px solid #4ea8ff;
+  padding: 8px 14px;
+  border: 2px solid var(--blue-main);
+  background: var(--blue-soft);
+  font-size: 10px;
   cursor: pointer;
 }
+
 .wardrobe-tab.active {
-  background: #4ea8ff;
+  background: var(--blue-main);
   color: #000;
 }
 
+/* Tab content */
 .wardrobe-content {
   display: none;
-  margin-top: 15px;
 }
+
 .wardrobe-content.active {
   display: block;
 }
 
-/* =========================================================
-   WARDROBE FIELD + ROW FIXES
-========================================================= */
+/* Fields grid - S3 (max polish) */
+.fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+}
 
-#wardrobe-popup .field {
+@media (max-width: 900px) {
+  .fields-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-#wardrobe-popup .field label {
-  width: 110px;
-  text-align: right;
-  font-size: 12px;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 9px;
 }
 
-#wardrobe-popup input[type="text"] {
-  background: #111a2a;
-  border: 2px solid #4ea8ff;
-  padding: 6px 8px;
-  color: #fff;
-  width: 140px;
-  font-family: "Press Start 2P";
+.field label {
+  font-size: 9px;
 }
 
-/* item rows */
-.item-row,
-.color-options {
+/* color options + item rows */
+.color-options,
+.item-row {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 6px;
 }
 
-/* swatches */
-.color-swatch,
-.item-swatch {
-  width: 50px;
-  height: 40px;
-  border: 2px solid #444;
+/* Color swatches */
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  border: 2px solid var(--border-subtle);
   cursor: pointer;
 }
-.color-swatch { border-radius: 50%; }
 
-/* gender */
-.gender-btn {
-  background: #172030;
-  border: 2px solid #4ea8ff;
+/* Item swatches */
+.item-swatch {
+  min-width: 68px;
+  padding: 4px 6px;
+  border: 2px solid var(--border-subtle);
+  background: #020617;
+  cursor: pointer;
+  font-size: 8px;
 }
 
-/* =========================================================
-   ACTIVE STATES
-========================================================= */
+/* Gender row */
+.gender-row {
+  display: flex;
+  gap: 6px;
+}
 
+/* Active state */
 #wardrobe-popup button.active,
-#wardrobe-popup .color-swatch.active {
-  outline: 3px solid #4ea8ff !important;
-  background: #4ea8ff !important;
-  color: #000 !important;
-  box-shadow: 0 0 6px #4ea8ff;
-}
-
+#wardrobe-popup .color-swatch.active,
 #wardrobe-popup .item-swatch.active {
-  background: #4ea8ff;
+  outline: 2px solid var(--blue-main);
+  background: var(--blue-main);
   color: #000;
 }
 
-/* skins */
-.skin-card.selected {
-  border: 3px solid #4ea8ff !important;
-  outline: 3px solid #4ea8ff !important;
-  box-shadow: 0 0 6px #4ea8ff !important;
-}
-
-/* =========================================================
-   SKINS GRID
-========================================================= */
-
+/* Skins grid */
 #skins-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 12px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .skin-card {
-  padding: 12px;
+  padding: 10px 8px;
+  background: #020617;
+  border: 2px solid var(--border-subtle);
+  font-size: 8px;
   text-align: center;
-  background: #111a2a;
-  border: 2px solid #444;
   cursor: pointer;
 }
+
 .skin-card.locked {
   opacity: 0.35;
   border-style: dashed;
 }
-.skin-card.rare { border-color: #4ea8ff; }
-.skin-card.epic { border-color: #a06bff; }
-.skin-card.legendary { border-color: #ffd700; }
 
-/* =========================================================
-   BUTTON BASE
-========================================================= */
+.skin-card.rare { border-color: #3b82f6; }
+.skin-card.epic { border-color: #a855f7; }
+.skin-card.legendary { border-color: #eab308; }
 
-.btn {
-  padding: 12px;
-  background: #152030;
-  border: 2px solid #4ea8ff;
-  cursor: pointer;
-  color: #fff;
+.skin-card.selected {
+  border: 2px solid var(--blue-main);
+  box-shadow: 0 0 6px var(--blue-main);
 }
 
-.btn.small {
-  padding: 8px 10px;
+.skins-note {
+  font-size: 9px;
+  margin-bottom: 8px;
+}
+
+/* =========================================================
+   LORE
+========================================================= */
+
+.panel-lore {
+  max-width: 520px;
+}
+
+.lore-grid {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.lore-grid canvas {
+  border: 2px solid var(--blue-main);
+  background: #020617;
+}
+
+/* =========================================================
+   ACHIEVEMENTS
+========================================================= */
+
+.panel-achievements {
+  max-width: 520px;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.achievement-tile {
+  border: 2px solid var(--border-subtle);
+  padding: 6px;
+  font-size: 8px;
+  background: #020617;
+}
+
+.achievement-tile.unlocked {
+  border-color: var(--blue-main);
+  box-shadow: 0 0 6px var(--blue-main);
+}
+
+/* =========================================================
+   DEV MENU
+========================================================= */
+
+.panel-dev {
+  max-width: 450px;
+}
+
+.dev-section {
+  margin-bottom: 12px;
+}
+
+.dev-label {
+  display: block;
+  font-size: 9px;
+  margin-bottom: 4px;
+}
+
+.dev-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* =========================================================
+   MISC
+========================================================= */
+
+#rpg-overlay .panel {
+  text-align: center;
 }
