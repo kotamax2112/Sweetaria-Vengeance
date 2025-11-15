@@ -111,3 +111,46 @@ hr{ border:0; border-top:1px solid var(--border); opacity:0.5; margin:10px 0; }
 /* Animations */
 @keyframes pulse{ 0%,100%{opacity:0.6} 50%{opacity:1} }
 @keyframes blink{ 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ============================================
+   WARDROBE HIGHLIGHT FIXES — FINAL
+   ============================================ */
+
+/* Ensure .active always wins */
+.wardrobe-content button.active,
+.gender-btn.active,
+.skin-card.selected {
+  outline: 3px solid #4ea8ff !important;
+  box-shadow: 0 0 8px #4ea8ff !important;
+  background-color: #1d2a3d !important;
+  color: #fff !important;
+}
+
+/* Hair & Item buttons */
+.item-swatch.active {
+  background-color: #4ea8ff !important;
+  color: black !important;
+}
+
+/* Color circles (shirt, skin, pants) */
+.color-swatch.active {
+  outline: 3px solid #4ea8ff !important;
+}
+
+/* Gender button fixes */
+.gender-btn {
+  transition: 0.15s;
+}
+.gender-btn.active {
+  background: #4ea8ff !important;
+  color: black !important;
+}
+
+/* Prevent global button styles from overriding */
+.wardrobe-content button,
+.gender-btn,
+.item-swatch,
+.color-swatch {
+  position: relative;
+  z-index: 3;
+}
