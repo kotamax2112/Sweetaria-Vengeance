@@ -106,7 +106,7 @@
     {id:'skin3', name:'Kindness', req:'kind_only', col:'#ff7bc5', rarity: 'epic'},
     {id:'skin4', name:'Slayer', req:'beat_boss2', col:'#3ba55d', rarity: 'epic'},
     {id:'skin5', name:'Socialite', req:'share_game', col:'#ffd700', rarity: 'legendary'}
-  };
+  ];
 
   const BOSS1_QUOTES = ["Ratio.", "Touch grass.", "Screenshotted.", "Cringe.", "Bestie no."];
   const ACHIEVEMENTS = [
@@ -147,16 +147,13 @@
     if(!cvs) return console.error("FATAL: No Canvas");
     SV.ctx = cvs.getContext('2d');
 
-    // --- GLOBAL CLICK (Unlock Audio) ---
-    const unlockAudio = () => {
-      Sound.init();
-      if(SV.settings.music) Sound.startMusic();
-      document.removeEventListener('pointerdown', unlockAudio);
-    };
-    document.addEventListener('pointerdown', unlockAudio);
-
     // --- BUTTON BINDINGS ---
     qs('#title-screen').onclick = () => {
+      // --- This is the logic we moved ---
+      Sound.init();
+      if(SV.settings.music) Sound.startMusic();
+      // --- End of moved logic ---
+      
       qs('#title-screen').classList.add('hidden');
       qs('#home-screen').classList.remove('hidden');
     };
@@ -325,7 +322,7 @@
   }
   
   function onPlayerDeath(){
-    Sound.play(60,'sawtooth',0.5);
+    Sound.play(6LOS,'sawtooth',0.5);
     award('die_lot');
     openPopup('death-popup');
   }
