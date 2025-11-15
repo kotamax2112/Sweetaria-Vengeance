@@ -309,3 +309,41 @@ canvas {
 .btn:hover {
   background: #25507a;
 }
+
+/* ============================================================
+   WARDROBE — FINAL OVERRIDE TO FIX ACTIVE HIGHLIGHTS
+   ============================================================ */
+
+/* hair, items, gender, colors — force highlight */
+#wardrobe-popup .wardrobe-content button.active {
+  background: #4ea8ff !important;
+  color: #000 !important;
+  outline: 3px solid #4ea8ff !important;
+  box-shadow: 0 0 6px #4ea8ff !important;
+}
+
+/* color swatch highlight */
+#wardrobe-popup .color-swatch.active {
+  outline: 3px solid #4ea8ff !important;
+}
+
+/* gender top-row fix */
+#wardrobe-popup .gender-btn.active {
+  background: #4ea8ff !important;
+  color: #000 !important;
+  border-color: #4ea8ff !important;
+}
+
+/* remove .btn interference for wardrobe buttons */
+#wardrobe-popup .wardrobe-content .btn,
+#wardrobe-popup .wardrobe-content button {
+  background: #1a2435 !important;
+  border: 2px solid #4ea8ff !important;
+}
+
+/* skin cards fix */
+#wardrobe-popup .skin-card.selected {
+  border: 3px solid #4ea8ff !important;
+  outline: 3px solid #4ea8ff !important;
+  box-shadow: 0 0 6px #4ea8ff !important;
+}
