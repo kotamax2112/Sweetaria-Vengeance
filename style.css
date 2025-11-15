@@ -1,116 +1,472 @@
 /* =========================================================
-   SWEETARIA: VENGEANCE — BETA 2.0 CSS
+   SWEETARIA: VENGEANCE — BETA 2.0 CSS (FULL FIXED BUILD)
+   Includes: Title Screen Tap Fix (Guaranteed)
 ========================================================= */
-:root{ --ink:#e6eeff; --bg:#06070d; --panel:#0f1625; --border:#3a4a63; --primary:#4e9cff; --danger:#ff4d62; }
-*{box-sizing:border-box;margin:0;padding:0;user-select:none;}
-body{ background:var(--bg); color:var(--ink); font-family:'Press Start 2P',monospace; overflow:hidden; }
-button,input{ font-family:inherit; }
-hr{ border:0; border-top:1px solid var(--border); opacity:0.5; margin:10px 0; }
-.hidden{ display:none!important; }
-.screen{ position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; z-index:1; }
-.scroll-col{ max-height:50vh; overflow-y:auto; width:100%; padding:2px; }
-.row{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
 
-/* Buttons */
-.btn{
-  display:inline-flex; justify-content:center; align-items:center;
-  width:220px; padding:14px; border-radius:10px; border:2px solid var(--border);
-  background:#243046; color:#fff; cursor:pointer; margin:4px;
-  box-shadow:inset 0 -2px 0 rgba(255,255,255,0.1); transition:transform .1s;
+:root {
+  --ink:#e6eeff;
+  --bg:#06070d;
+  --panel:#0f1625;
+  --border:#3a4a63;
+  --primary:#4e9cff;
+  --danger:#ff4d62;
 }
-.btn:active{ transform:translateY(2px); }
-.btn.primary{ background:var(--primary); border-color:#88c6ff; }
-.btn.danger{ background:var(--danger); border-color:#ff90a0; }
-.btn.secondary{ background:#1b2437; }
-.btn.small{ width:auto; min-width:100px; padding:10px; font-size:0.8rem; }
-.icon-btn{
-  width:44px; height:44px; background:rgba(255,255,255,0.1); 
-  border:1px solid var(--border); border-radius:8px; cursor:pointer;
-  display:flex; justify-content:center; align-items:center; font-size:1.2rem;
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  user-select:none;
 }
-/* --- FIX: Moved settings button to right & fixed z-index --- */
-.settings-pos{ position:absolute; top:16px; right:16px; left:auto; z-index:101; }
-.pause-pos{ position:absolute; top:60px; right:16px; z-index:10; }
 
-/* Title */
-#title-screen{ justify-content:center; z-index:10000; cursor:pointer; background:#06070d; }
-#title-bg{ position:absolute; inset:0; z-index:0; overflow:hidden; }
-#title-bg .flame{
-  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-  width:120vw; height:120vw; background:radial-gradient(circle, rgba(140,0,220,0.4), transparent 70%);
-  animation: pulse 4s infinite ease-in-out;
+body {
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Press Start 2P', monospace;
+  overflow:hidden;
 }
-.title-content{ position:relative; z-index:2; text-align:center; pointer-events:none; }
-.game-title{ font-size:2.5rem; text-shadow:0 0 20px #88f; margin-bottom:20px; }
-.sub-title { font-size:0.6em; color:#b8c6e3 }
-.tap-to-start{ animation:blink 1s infinite; }
 
-/* Home */
-#home-screen{ justify-content:center; background:radial-gradient(circle at top,#151b35,#06070d); }
-.home-title{ margin-bottom:20px; margin-top:60px; }
-.menu-buttons{ display:flex; flex-direction:column; align-items:center; width:100%; z-index:5; }
-#dev-trigger-zone{ position:absolute; top:0; left:0; width:150px; height:150px; z-index:100; }
+button, input { font-family:inherit; }
 
-/* Game */
-#game-screen{ background:#0b1220; justify-content:flex-start; padding-top:10px; }
-#top-ui{ width:94%; padding:8px; background:rgba(0,0,0,0.6); border-radius:8px; font-size:0.7rem; }
-.ui-row{ display:flex; justify-content:space-between; margin-bottom:4px; }
-#level-progress-wrap{ width:94%; height:6px; background:#222; border-radius:4px; margin:6px 0; }
-#level-progress-fill{ height:100%; background:var(--primary); width:0%; transition:width .2s; }
-#game-canvas{ background:#111; border:2px solid #333; border-radius:12px; max-width:800px; width:96vw; height:50vh; image-rendering: pixelated; }
-.jump-btn{ width:80%; margin-top:16px; padding:24px; background:var(--danger); color:white; font-size:1.5rem; border:none; border-radius:16px; box-shadow:0 6px 0 #c21c40; }
-.jump-btn:active{ transform:translateY(4px); box-shadow:0 2px 0 #c21c40; }
-
-/* Popups */
-.popup{ position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.85); display:flex; justify-content:center; align-items:center; backdrop-filter:blur(4px); }
-.panel{ background:var(--panel); border:2px solid var(--border); padding:20px; width:90%; max-width:500px; border-radius:16px; text-align:center; }
-.panel.wide{ max-width:700px; }
-.field{ margin:12px 0; text-align:left; }
-.field label{ display:block; font-size:0.8rem; margin-bottom:5px; }
-
-/* Wardrobe */
-.wardrobe-tabs{ display:flex; gap:10px; margin-bottom:10px; }
-.wardrobe-tab{ flex:1; padding:10px; background:#182131; border:1px solid #444; color:#888; cursor:pointer; border-radius:8px; }
-.wardrobe-tab.active{ background:var(--primary); color:#fff; border-color:#fff; }
-.wardrobe-content{ display:none; }
-.wardrobe-content.active{ display:block; }
-#player-preview{ width:100%; height:160px; background:#0d121c; border-radius:10px; margin-bottom:15px; image-rendering: pixelated; }
-.color-options, .item-row, .gender-options{ display:flex; gap:8px; flex-wrap:wrap; margin-top:5px; justify-content:center; }
-.color-swatch{ width:32px; height:32px; border-radius:50%; border:2px solid #555; cursor:pointer; }
-.item-swatch, .gender-btn{ padding:8px 12px; background:#2c3a50; border:1px solid #444; border-radius:6px; cursor:pointer; font-size:0.75rem; }
-.item-swatch.active, .gender-btn.active{ border-color:var(--primary); background:#4e9cff; color:white; }
-
-/* Tarot Cards (Skins & Awards) */
-.skins-grid, .ach-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-.skin-card, .achievement-tile {
-  background:#1a2235; border:2px solid #444; border-radius:8px;
-  aspect-ratio: 2/3; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding:5px; cursor:pointer; font-size:0.7rem; text-align:center;
+hr {
+  border:0;
+  border-top:1px solid var(--border);
+  opacity:0.5;
+  margin:10px 0;
 }
-.skin-card.locked, .achievement-tile.locked{ opacity:0.5; filter:grayscale(1); }
-.skin-card.selected{ box-shadow:0 0 10px var(--primary); border-width: 3px; }
-.achievement-tile.unlocked{ border-color:var(--primary); }
 
-/* --- NEW: Rarity Borders --- */
-.skin-card.rare { border-color: #4e9cff; }
-.skin-card.epic { border-color: #a06bff; }
-.skin-card.legendary { border-color: #ff8d3b; }
+.hidden { display:none !important; }
+
+.screen {
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  z-index:1;
+}
+
+.scroll-col {
+  max-height:50vh;
+  overflow-y:auto;
+  width:100%;
+  padding:2px;
+}
+
+.row {
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+.btn {
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  width:220px;
+  padding:14px;
+  border-radius:10px;
+  border:2px solid var(--border);
+  background:#243046;
+  color:#fff;
+  cursor:pointer;
+  margin:4px;
+  box-shadow:inset 0 -2px 0 rgba(255,255,255,0.1);
+  transition:transform .1s;
+}
+.btn:active { transform:translateY(2px); }
+.btn.primary { background:var(--primary); border-color:#88c6ff; }
+.btn.danger { background:var(--danger); border-color:#ff90a0; }
+.btn.secondary { background:#1b2437; }
+.btn.small { width:auto; min-width:100px; padding:10px; font-size:0.8rem; }
+
+.icon-btn {
+  width:44px;
+  height:44px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid var(--border);
+  border-radius:8px;
+  cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:1.2rem;
+}
+
+/* =========================================================
+   FIXED: Settings Button placement
+========================================================= */
+.settings-pos {
+  position:absolute;
+  top:16px;
+  right:16px;
+  z-index:101;
+}
+.pause-pos {
+  position:absolute;
+  top:60px;
+  right:16px;
+  z-index:10;
+}
+
+/* =========================================================
+   TITLE SCREEN (Tap Fix Applied)
+========================================================= */
+
+#title-screen {
+  justify-content:center;
+  z-index:10000;
+  cursor:pointer;
+  background:#06070d;
+
+  /* ENSURE THE ENTIRE SCREEN RECEIVES CLICKS */
+  pointer-events:auto;
+}
+
+#title-bg {
+  position:absolute;
+  inset:0;
+  z-index:0;
+
+  /* FIX: Background MUST NOT block clicks */
+  pointer-events:none !important;
+}
+
+#title-bg .flame {
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%, -50%);
+  width:120vw; height:120vw;
+
+  /* FIX: Flames cannot intercept touches */
+  pointer-events:none !important;
+
+  background:radial-gradient(circle,
+    rgba(140,0,220,0.4),
+    transparent 70%);
+  animation:pulse 4s infinite ease-in-out;
+}
+
+.title-content {
+  position:relative;
+  z-index:2;
+  text-align:center;
+
+  /* Allow title-screen to receive clicks */
+  pointer-events:none;
+}
+
+.game-title {
+  font-size:2.5rem;
+  text-shadow:0 0 20px #88f;
+  margin-bottom:20px;
+}
+
+.sub-title { font-size:0.6em; color:#b8c6e3; }
+.tap-to-start { animation:blink 1s infinite; }
+
+/* =========================================================
+   HOME SCREEN
+========================================================= */
+#home-screen {
+  justify-content:center;
+  background:radial-gradient(circle at top, #151b35, #06070d);
+}
+
+.home-title { margin-bottom:20px; margin-top:60px; }
+
+.menu-buttons {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+  z-index:5;
+}
+
+#dev-trigger-zone {
+  position:absolute;
+  top:0;
+  left:0;
+  width:150px;
+  height:150px;
+  z-index:100;
+}
+
+/* =========================================================
+   GAME SCREEN
+========================================================= */
+#game-screen {
+  background:#0b1220;
+  justify-content:flex-start;
+  padding-top:10px;
+}
+
+#top-ui {
+  width:94%;
+  padding:8px;
+  background:rgba(0,0,0,0.6);
+  border-radius:8px;
+  font-size:0.7rem;
+}
+
+.ui-row {
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:4px;
+}
+
+#level-progress-wrap {
+  width:94%;
+  height:6px;
+  background:#222;
+  border-radius:4px;
+  margin:6px 0;
+}
+
+#level-progress-fill {
+  height:100%;
+  background:var(--primary);
+  width:0%;
+  transition:width .2s;
+}
+
+#game-canvas {
+  background:#111;
+  border:2px solid #333;
+  border-radius:12px;
+  max-width:800px;
+  width:96vw;
+  height:50vh;
+  image-rendering:pixelated;
+}
+
+.jump-btn {
+  width:80%;
+  margin-top:16px;
+  padding:24px;
+  background:var(--danger);
+  color:white;
+  font-size:1.5rem;
+  border:none;
+  border-radius:16px;
+  box-shadow:0 6px 0 #c21c40;
+}
+.jump-btn:active {
+  transform:translateY(4px);
+  box-shadow:0 2px 0 #c21c40;
+}
+
+/* =========================================================
+   POPUPS
+========================================================= */
+.popup {
+  position:fixed;
+  inset:0;
+  z-index:200;
+  background:rgba(0,0,0,0.85);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  backdrop-filter:blur(4px);
+}
+
+.panel {
+  background:var(--panel);
+  border:2px solid var(--border);
+  padding:20px;
+  width:90%;
+  max-width:500px;
+  border-radius:16px;
+  text-align:center;
+}
+
+.panel.wide { max-width:700px; }
+
+.field {
+  margin:12px 0;
+  text-align:left;
+}
+.field label {
+  display:block;
+  font-size:0.8rem;
+  margin-bottom:5px;
+}
+
+/* =========================================================
+   WARDROBE
+========================================================= */
+.wardrobe-tabs {
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.wardrobe-tab {
+  flex:1;
+  padding:10px;
+  background:#182131;
+  border:1px solid #444;
+  color:#888;
+  cursor:pointer;
+  border-radius:8px;
+}
+.wardrobe-tab.active {
+  background:var(--primary);
+  color:#fff;
+  border-color:#fff;
+}
+
+.wardrobe-content { display:none; }
+.wardrobe-content.active { display:block; }
+
+#player-preview {
+  width:100%;
+  height:160px;
+  background:#0d121c;
+  border-radius:10px;
+  margin-bottom:15px;
+  image-rendering:pixelated;
+}
+
+.color-options,
+.item-row,
+.gender-options {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:5px;
+  justify-content:center;
+}
+
+.color-swatch {
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:2px solid #555;
+  cursor:pointer;
+}
+
+.item-swatch,
+.gender-btn {
+  padding:8px 12px;
+  background:#2c3a50;
+  border:1px solid #444;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:0.75rem;
+}
+
+.item-swatch.active,
+.gender-btn.active {
+  border-color:var(--primary);
+  background:#4e9cff;
+  color:white;
+}
+
+/* =========================================================
+   SKINS / AWARDS
+========================================================= */
+.skins-grid,
+.ach-grid {
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:10px;
+}
+
+.skin-card,
+.achievement-tile {
+  background:#1a2235;
+  border:2px solid #444;
+  border-radius:8px;
+  aspect-ratio:2/3;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:5px;
+  cursor:pointer;
+  font-size:0.7rem;
+  text-align:center;
+}
+
+.skin-card.locked,
+.achievement-tile.locked {
+  opacity:0.5;
+  filter:grayscale(1);
+}
+
+.skin-card.selected {
+  box-shadow:0 0 10px var(--primary);
+  border-width:3px;
+}
+
+.achievement-tile.unlocked {
+  border-color:var(--primary);
+}
+
+/* Rarity colors */
+.skin-card.rare { border-color:#4e9cff; }
+.skin-card.epic { border-color:#a06bff; }
+.skin-card.legendary { border-color:#ff8d3b; }
 .skin-card.selected.rare { box-shadow:0 0 10px #4e9cff; }
 .skin-card.selected.epic { box-shadow:0 0 10px #a06bff; }
 .skin-card.selected.legendary { box-shadow:0 0 10px #ff8d3b; }
 
+/* =========================================================
+   LORE
+========================================================= */
+.lore-card {
+  display:grid;
+  grid-template-columns:128px 1fr;
+  gap:15px;
+  text-align:left;
+  background:#151b2e;
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:10px;
+  align-items:center;
+}
 
-/* Lore */
-.lore-card{ display:grid; grid-template-columns:128px 1fr; gap:15px; text-align:left; background:#151b2e; padding:10px; border-radius:8px; margin-bottom:10px; align-items:center; }
-.lore-img{ width:128px; height:128px; background:#000; border-radius:8px; border:1px solid #444; image-rendering: pixelated; }
+.lore-img {
+  width:128px;
+  height:128px;
+  background:#000;
+  border-radius:8px;
+  border:1px solid #444;
+  image-rendering:pixelated;
+}
 
-/* Dev Menu */
-.dev-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:10px 0; }
-.dev-btn{ padding:10px; font-size:0.7rem; background:#222; border:1px solid #444; color:#fff; cursor:pointer; }
+/* =========================================================
+   DEV MENU
+========================================================= */
+.dev-grid {
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+  margin:10px 0;
+}
 
-/* Animations */
-@keyframes pulse{ 0%,100%{opacity:0.6} 50%{opacity:1} }
-@keyframes blink{ 0%,100%{opacity:1} 50%{opacity:0.3} }
-#title-bg, #title-bg * {
-  pointer-events: none;
+.dev-btn {
+  padding:10px;
+  font-size:0.7rem;
+  background:#222;
+  border:1px solid #444;
+  color:#fff;
+  cursor:pointer;
+}
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+@keyframes pulse {
+  0%, 100% { opacity:0.6 }
+  50% { opacity:1 }
+}
+@keyframes blink {
+  0%,100% { opacity:1 }
+  50% { opacity:0.3 }
 }
