@@ -639,45 +639,64 @@ function initWardrobe() {
     };
   });
 
-  // --- UNIVERSAL BUILDER (FIXED) ---
-  const build = (arr, id, prop, isColor, transformDisplay) => {
-    const el = qs('#' + id);
-    if (!el) return;
-    el.innerHTML = '';
+ // highlight helper
+function setActive(containerSelector, button) {
+  qsa(containerSelector + ' button').forEach(b => b.classList.remove('active'));
+  button.classList.add('active');
+}
 
-    arr.forEach(val => {
-      const b = document.createElement('button');
+// --- UNIVERSAL BUILDER (FINAL FIXED VERSION) ---
+const build = (arr, id, prop, isColor, transformDisplay) => {
+  const el = qs('#' + id);
+  if (!el) return;
 
-      if (isColor) {
-        b.className = 'color-swatch';
-        b.style.background = val;
+  el.innerHTML = '';
+
+  arr.forEach(val => {
+    const b = document.createElement('button');
+
+    // color swatch OR text button
+    if (isColor) {
+      b.className = 'color-swatch';
+      b.style.background = val;
+
+      // color swatch outline highlight
+      if (SV.settings[prop] === val) {
+        b.classList.add('active');
+        b.style.outline = '3px solid #4ea8ff';
       } else {
-        b.className = 'item-swatch';
-        b.textContent = transformDisplay ? transformDisplay(val) : val;
+        b.style.outline = '2px solid #444';
       }
 
-      // highlight active button
+    } else {
+      b.className = 'item-swatch';
+      b.textContent = transformDisplay ? transformDisplay(val) : val;
       if (SV.settings[prop] === val) b.classList.add('active');
+    }
 
-      b.onclick = () => {
-        // set new setting
-        SV.settings[prop] = val;
+    // click behavior
+    b.onclick = () => {
+      SV.settings[prop] = val;
+      if (prop === 'shirt') SV.settings.skin = null;
+      Store.set('sv_set', SV.settings);
 
-        // selecting a shirt cancels skins
-        if (prop === 'shirt') SV.settings.skin = null;
+      // update active highlight
+      setActive('#' + id, b);
 
-        Store.set('sv_set', SV.settings);
+      // update color outline highlight
+      if (isColor) {
+        qsa('#' + id + ' .color-swatch').forEach(sw => {
+          sw.style.outline = '2px solid #444';
+        });
+        b.style.outline = '3px solid #4ea8ff';
+      }
 
-        // update button states
-        qsa('#' + id + ' button').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
+      render();
+    };
 
-        render();
-      };
-
-      el.appendChild(b);
-    });
-  };
+    el.appendChild(b);
+  });
+};
 
   // --- HAIR ---
   const refreshHair = () => {
