@@ -289,3 +289,45 @@ canvas {
   outline: 3px solid #4ea8ff !important;
   box-shadow: 0 0 6px #4ea8ff !important;
 }
+
+/* =========================================================
+   WARDROBE — FIELD + LABEL + INPUT FIX
+   (Restores your original clean layout)
+   ========================================================= */
+
+#wardrobe-popup .field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 12px;
+}
+
+#wardrobe-popup .field label {
+  width: 90px;
+  text-align: right;
+  font-size: 12px;
+  color: #fff;
+}
+
+#wardrobe-popup input[type="text"] {
+  background: #111a2a;
+  border: 2px solid #4ea8ff;
+  color: #fff;
+  padding: 6px 8px;
+  width: 130px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+}
+
+#wardrobe-popup .item-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+#wardrobe-popup .color-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
