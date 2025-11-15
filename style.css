@@ -1,97 +1,72 @@
 /* =========================================================
-   SWEETARIA: VENGEANCE — FULL CSS (CLEAN + FIXED)
-   ========================================================= */
+   GLOBAL RESET
+========================================================= */
 
-/* GLOBAL RESET */
 * {
   box-sizing: border-box;
   user-select: none;
-  -webkit-user-select: none;
 }
-
 body {
   margin: 0;
   background: #05060b;
   font-family: "Press Start 2P", monospace;
   color: #fff;
 }
-
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 /* =========================================================
-   LAYOUT
+   GAME CONTAINER
 ========================================================= */
-
 #game-container {
   width: 800px;
   height: 480px;
   margin: 0 auto;
-  position: relative;
   background: #000;
+  position: relative;
   overflow: hidden;
   border: 4px solid #222;
 }
-
-canvas {
-  display: block;
-}
+canvas { display: block; }
 
 /* =========================================================
-   TITLE SCREEN
+   TITLE
 ========================================================= */
-
 #title-screen {
   position: absolute;
   inset: 0;
   background: #060910;
-  color: #fff;
-  font-size: 24px;
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
 }
-
 #title-screen h1 {
   font-size: 38px;
   margin-bottom: 40px;
 }
 
 /* =========================================================
-   HOME SCREEN
+   HOME MENU
 ========================================================= */
-
 #home-screen {
   position: absolute;
   inset: 0;
-  background: #060910;
-  display: flex;
-  flex-direction: column;
   padding: 30px;
-  gap: 20px;
 }
-
 .menu-btn {
-  padding: 18px;
-  font-size: 16px;
+  padding: 16px;
   background: #111a2a;
   border: 3px solid #4ea8ff;
-  color: #fff;
+  font-size: 16px;
   cursor: pointer;
-  transition: 0.15s;
+  margin-right: 10px;
 }
-
-.menu-btn:hover {
-  background: #173454;
-}
+.menu-btn:hover { background: #173454; }
 
 /* =========================================================
    POPUPS
 ========================================================= */
-
 .popup {
   position: absolute;
   inset: 40px;
@@ -100,7 +75,6 @@ canvas {
   padding: 20px;
   overflow-y: auto;
 }
-
 .close-btn {
   position: absolute;
   top: 6px;
@@ -113,9 +87,8 @@ canvas {
 }
 
 /* =========================================================
-   WARDROBE SYSTEM
+   WARDROBE BASE
 ========================================================= */
-
 #player-preview {
   width: 300px;
   height: 180px;
@@ -130,15 +103,12 @@ canvas {
   gap: 8px;
   margin-bottom: 14px;
 }
-
 .wardrobe-tab {
   padding: 10px 12px;
   background: #172030;
   border: 2px solid #4ea8ff;
   cursor: pointer;
-  transition: 0.15s;
 }
-
 .wardrobe-tab.active {
   background: #4ea8ff;
   color: #000;
@@ -146,35 +116,83 @@ canvas {
 
 .wardrobe-content {
   display: none;
-  margin-top: 10px;
+  margin-top: 15px;
 }
-
 .wardrobe-content.active {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 10px;
+  display: block;
 }
 
-/* Swatches */
+/* =========================================================
+   WARDROBE FIELD + ROW FIXES
+========================================================= */
+
+#wardrobe-popup .field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+#wardrobe-popup .field label {
+  width: 110px;
+  text-align: right;
+  font-size: 12px;
+}
+
+#wardrobe-popup input[type="text"] {
+  background: #111a2a;
+  border: 2px solid #4ea8ff;
+  padding: 6px 8px;
+  color: #fff;
+  width: 140px;
+  font-family: "Press Start 2P";
+}
+
+/* item rows */
+.item-row,
+.color-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* swatches */
 .color-swatch,
 .item-swatch {
-  width: 60px;
+  width: 50px;
   height: 40px;
   border: 2px solid #444;
   cursor: pointer;
 }
+.color-swatch { border-radius: 50%; }
 
-.color-swatch {
-  border-radius: 50%;
-}
-
-/* Gender Buttons */
+/* gender */
 .gender-btn {
-  padding: 10px;
   background: #172030;
   border: 2px solid #4ea8ff;
-  cursor: pointer;
-  transition: 0.15s;
+}
+
+/* =========================================================
+   ACTIVE STATES
+========================================================= */
+
+#wardrobe-popup button.active,
+#wardrobe-popup .color-swatch.active {
+  outline: 3px solid #4ea8ff !important;
+  background: #4ea8ff !important;
+  color: #000 !important;
+  box-shadow: 0 0 6px #4ea8ff;
+}
+
+#wardrobe-popup .item-swatch.active {
+  background: #4ea8ff;
+  color: #000;
+}
+
+/* skins */
+.skin-card.selected {
+  border: 3px solid #4ea8ff !important;
+  outline: 3px solid #4ea8ff !important;
+  box-shadow: 0 0 6px #4ea8ff !important;
 }
 
 /* =========================================================
@@ -184,108 +202,36 @@ canvas {
 #skins-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .skin-card {
-  padding: 10px;
+  padding: 12px;
   text-align: center;
   background: #111a2a;
   border: 2px solid #444;
   cursor: pointer;
 }
-
 .skin-card.locked {
   opacity: 0.35;
   border-style: dashed;
 }
-
 .skin-card.rare { border-color: #4ea8ff; }
 .skin-card.epic { border-color: #a06bff; }
 .skin-card.legendary { border-color: #ffd700; }
 
 /* =========================================================
-   ACHIEVEMENTS
-========================================================= */
-
-#achievements-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 10px;
-}
-
-.achievement-tile {
-  background: #162030;
-  padding: 12px;
-  border: 2px solid #444;
-}
-
-.achievement-tile.unlocked {
-  border-color: #4ea8ff;
-}
-
-/* =========================================================
-   RPG MENU
-========================================================= */
-
-#rpg-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.9);
-  padding: 20px;
-}
-
-#boss-hp-bar {
-  width: 100%;
-  height: 20px;
-  background: #4ea8ff;
-}
-
-/* =========================================================
-   GENERAL BUTTONS
+   BUTTON BASE
 ========================================================= */
 
 .btn {
   padding: 12px;
   background: #152030;
-  color: #fff;
   border: 2px solid #4ea8ff;
   cursor: pointer;
-  transition: 0.15s;
+  color: #fff;
 }
 
-.btn:hover {
-  background: #25507a;
-}
-
-/* =========================================================
-   WARDROBE — FINAL SCOPED FIX FOR ACTIVE STATES
-   (SAFE VERSION — DOES NOT TOUCH GLOBAL UI)
-   ========================================================= */
-
-/* Hair + Held Item selection */
-#wardrobe-popup .item-row button.active {
-  background-color: #4ea8ff !important;
-  color: #000 !important;
-  outline: 3px solid #4ea8ff !important;
-  box-shadow: 0 0 6px #4ea8ff !important;
-}
-
-/* Gender selection */
-#wardrobe-popup .gender-btn.active {
-  background-color: #4ea8ff !important;
-  color: #000 !important;
-  border-color: #4ea8ff !important;
-}
-
-/* Color swatches */
-#wardrobe-popup .color-options .color-swatch.active {
-  outline: 3px solid #4ea8ff !important;
-}
-
-/* Skin card highlight */
-#wardrobe-popup #skins-grid .skin-card.selected {
-  border: 3px solid #4ea8ff !important;
-  outline: 3px solid #4ea8ff !important;
-  box-shadow: 0 0 6px #4ea8ff !important;
+.btn.small {
+  padding: 8px 10px;
 }
