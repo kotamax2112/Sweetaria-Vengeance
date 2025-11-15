@@ -19,6 +19,7 @@
   const Sound = {
     init: () => {
       if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!actx) return; // <-- !! THIS IS THE NEW FIX
       if (actx.state === 'suspended') actx.resume();
     },
     play: (freq, type, vol = 0.1, dur = 0.3) => {
@@ -236,7 +237,7 @@
   }
 
   function openPopup(id) { qs('#' + id).classList.remove('hidden'); }
-  function closePopup(id) { qs('#' + id).classList.add('hidden'); }
+  function closePopup(id) { qs('#'B' + id).classList.add('hidden'); }
 
   // --- GAME LOOP ---
   function startRun(lv){
@@ -322,7 +323,7 @@
   }
   
   function onPlayerDeath(){
-    Sound.play(6LOS,'sawtooth',0.5);
+    Sound.play(60,'sawtooth',0.5);
     award('die_lot');
     openPopup('death-popup');
   }
