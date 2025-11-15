@@ -9,8 +9,13 @@
 </head>
 <body>
 
-<div id="title-screen" class="screen">
-  <div id="title-bg"><div class="flame layer1"></div><div class="flame layer2"></div></div>
+<!-- GUARANTEED TAP-TO-START FIX ADDED BELOW -->
+<div id="title-screen" class="screen"
+  onclick="this.classList.add('hidden'); document.getElementById('home-screen').classList.remove('hidden');">
+  <div id="title-bg">
+    <div class="flame layer1"></div>
+    <div class="flame layer2"></div>
+  </div>
   <div class="title-content">
     <h1 class="game-title">SWEETARIA<br><span class="sub-title">VENGEANCE</span></h1>
     <p class="tap-to-start">TAP TO START</p>
@@ -54,14 +59,15 @@
   <button id="jump-btn" class="jump-btn">JUMP</button>
 </div>
 
+<!-- WARDROBE -->
 <div id="wardrobe-popup" class="popup hidden">
   <div class="panel wide">
     <h3>WARDROBE</h3>
     <div id="player-preview"></div>
     
     <div class="wardrobe-tabs">
-      <button id="tab-gear" class="wardrobe-tab active" data-tab="content-gear">Gear</button>
-      <button id="tab-skins" class="wardrobe-tab" data-tab="content-skins">Skins</button>
+      <button class="wardrobe-tab active" data-tab="content-gear">Gear</button>
+      <button class="wardrobe-tab" data-tab="content-skins">Skins</button>
     </div>
     
     <div id="content-gear" class="wardrobe-content active scroll-col">
@@ -90,6 +96,7 @@
   </div>
 </div>
 
+<!-- LORE -->
 <div id="lore-popup" class="popup hidden">
   <div class="panel wide">
     <h3>LORE</h3>
@@ -98,14 +105,14 @@
         <div class="lore-img"><canvas id="lore-canvas-1" width="128" height="128"></canvas></div>
         <div class="lore-text">
           <strong>The Cell Phone Teen Troll</strong><br>
-          <small>Born from the digital waste of a thousand unread notifications, she haunts the mid-levels of Sweetaria. She fights not with swords, but with pure, weaponized apathy. Legend says she stared into the abyss of a scrolling feed until the feed stared back. Her primary attack is 'The Ratio'—a devastating beam of negative engagement.</small>
+          <small>Born from the digital waste...</small>
         </div>
       </div>
       <div class="lore-card">
         <div class="lore-img"><canvas id="lore-canvas-2" width="128" height="128"></canvas></div>
         <div class="lore-text">
           <strong>The Big Boss Head</strong><br>
-          <small>A manifestation of pure corporate spite. The Big Boss Head floats eternally at the summit of the spire, fueled by the tears of millennials. He possesses no body, for he needs no hands to crush dreams—only policy changes. He believes the world stopped turning in 1985 and that his only weakness is Kindness (which he finds "disgusting").</small>
+          <small>A manifestation of pure corporate spite...</small>
         </div>
       </div>
     </div>
@@ -113,6 +120,7 @@
   </div>
 </div>
 
+<!-- ACHIEVEMENTS -->
 <div id="achievements-popup" class="popup hidden">
   <div class="panel">
     <h3>AWARDS</h3>
@@ -121,6 +129,7 @@
   </div>
 </div>
 
+<!-- SETTINGS -->
 <div id="settings-popup" class="popup hidden">
   <div class="panel">
     <h3>SETTINGS</h3>
@@ -135,6 +144,7 @@
   </div>
 </div>
 
+<!-- CREDITS -->
 <div id="credits-popup" class="popup hidden">
   <div class="panel">
     <h3>CREDITS</h3>
@@ -148,6 +158,7 @@
   </div>
 </div>
 
+<!-- PAUSE -->
 <div id="pause-menu" class="popup hidden">
   <div class="panel">
     <h3>PAUSED</h3>
@@ -161,6 +172,7 @@
   </div>
 </div>
 
+<!-- DEV MENU -->
 <div id="dev-menu" class="popup hidden">
   <div class="panel">
     <h3>DEV CONSOLE</h3>
@@ -178,6 +190,7 @@
   </div>
 </div>
 
+<!-- SHARE -->
 <div id="share-popup" class="popup hidden">
   <div class="panel">
     <h3>SHARE</h3>
@@ -188,9 +201,38 @@
   </div>
 </div>
 
-<div id="start-popup" class="popup hidden"><div class="panel"><h3>CONTINUE?</h3><button id="start-at-last" class="btn primary">Checkpoint</button><button id="start-beginning" class="btn">New Run</button></div></div>
-<div id="death-popup" class="popup hidden"><div class="panel"><h3>YOU DIED</h3><button id="death-restart-checkpoint" class="btn primary">Retry</button><button id="death-exit-main" class="btn danger">Quit</button></div></div>
-<div id="rpg-overlay" class="screen hidden"><div class="rpg-wrap"><div class="boss-head">😈</div><div class="boss-hp"><div id="boss-hp-bar"></div></div><div class="rpg-actions"><button class="btn insult-btn"></button><button class="btn insult-btn"></button><button class="btn insult-btn"></button><button class="btn insult-btn"></button></div><div id="rpg-log" class="rpg-log"></div></div></div>
+<!-- START POPUP -->
+<div id="start-popup" class="popup hidden">
+  <div class="panel">
+    <h3>CONTINUE?</h3>
+    <button id="start-at-last" class="btn primary">Checkpoint</button>
+    <button id="start-beginning" class="btn">New Run</button>
+  </div>
+</div>
+
+<!-- DEATH -->
+<div id="death-popup" class="popup hidden">
+  <div class="panel">
+    <h3>YOU DIED</h3>
+    <button id="death-restart-checkpoint" class="btn primary">Retry</button>
+    <button id="death-exit-main" class="btn danger">Quit</button>
+  </div>
+</div>
+
+<!-- RPG -->
+<div id="rpg-overlay" class="screen hidden">
+  <div class="rpg-wrap">
+    <div class="boss-head">😈</div>
+    <div class="boss-hp"><div id="boss-hp-bar"></div></div>
+    <div class="rpg-actions">
+      <button class="btn insult-btn"></button>
+      <button class="btn insult-btn"></button>
+      <button class="btn insult-btn"></button>
+      <button class="btn insult-btn"></button>
+    </div>
+    <div id="rpg-log" class="rpg-log"></div>
+  </div>
+</div>
 
 </body>
 </html>
