@@ -3,6 +3,7 @@
    - Fixed: ALL syntax errors
    - Fixed: closePopup()
    - Fixed: clicking menus works again
+   - FIXED: drawPlayerSprite was incomplete, crashing wardrobe
    ========================================================= */
 (() => {
   'use strict';
@@ -432,6 +433,9 @@
     }
   }
 
+  // ========================================================
+  // --- THIS IS THE FIXED FUNCTION ---
+  // ========================================================
   function drawPlayerSprite(ctx,x,y){
     const s=SV.settings;
     let shirt=s.shirt;
@@ -439,19 +443,41 @@
       const sk=SKINS.find(k=>k.id===s.skin);
       if(sk) shirt=sk.col;
     }
+    
+    // Body
     ctx.fillStyle=shirt;
     ctx.fillRect(x,y,42,64);
 
+    // Head
     ctx.fillStyle=s.skinTone;
     ctx.fillRect(x+8,y-16,26,16);
 
+    // Legs
     ctx.fillStyle=s.pants;
     ctx.fillRect(x+4,y+36,12,28);
     ctx.fillRect(x+26,y+36,12,28);
 
-    ctx.fillStyle='#70421b';
-    if(s.hairStyle==='short') ctx.fillRect(x+8,y-20,26,8);
+    // Hair
+    ctx.fillStyle = '#70421b';
+    const wind = Math.sin(Date.now()*0.005) * 2;
+    if(s.hairStyle==='long') { ctx.fillRect(x+8,y-20,26,10); ctx.fillRect(x+4+wind,y-10,6,24); }
+    else if(s.hairStyle==='ponytail') { ctx.fillRect(x+8,y-20,24,8); ctx.fillRect(x+26+wind,y-12,6,16); }
+    else if(s.hairStyle==='short') { ctx.fillRect(x+8,y-20,26,8); }
+    else if(s.hairStyle==='bob') { ctx.fillRect(x+6,y-20,28,12); }
+    else if(s.hairStyle==='side') { ctx.fillRect(x+6,y-20,28,10); ctx.fillRect(x+30,y-12,4,10); }
+    else if(s.hairStyle==='spiky') { for(let i=0; i<5; i++) ctx.fillRect(x+10+i*5, y-24, 4, 10); }
+    else if(s.hairStyle==='mohawk') { ctx.fillRect(x+18,y-24,6,12); }
+
+    // Items
+    ctx.fillStyle = '#999';
+    if(s.item === 'sword') { ctx.fillRect(x+45,y+20,4,8); ctx.fillRect(x+35,y+26,24,4); }
+    else if(s.item === 'scepter') { ctx.fillRect(x+45,y+20,4,30); ctx.fillStyle='#ff0'; ctx.beginPath(); ctx.arc(x+47,y+15,6,0,7); ctx.fill(); }
+    else if(s.item === 'mallet') { ctx.fillRect(x+45,y+20,4,20); ctx.fillStyle='#8b4513'; ctx.fillRect(x+38,y,20,15); }
+    else if(s.item === 'cleaver') { ctx.fillRect(x+45,y+20,4,15); ctx.fillRect(x+38,y+15,20,10); }
   }
+  // ========================================================
+  // --- END OF FIX ---
+  // ========================================================
 
   // Wardrobe
   function initWardrobe(){
@@ -522,6 +548,31 @@
         refreshHair(); render();
       };
     });
+    
+    // Also re-add your skin-building logic here
+    const sg = qs('#skins-grid');
+    if (sg) {
+      sg.innerHTML='';
+      const have = SV.progress.ach || {};
+      SKINS.forEach(s => {
+        const d = document.createElement('div');
+        const isUnlocked = !!have[s.req];
+        d.className = `skin-card ${SV.settings.skin===s.id ? 'selected' : ''} ${isUnlocked ? '' : 'locked'} ${isUnlocked ? s.rarity : ''}`;
+        
+        if (isUnlocked) {
+          d.innerHTML = `<b>${s.name}</b>`;
+          d.onclick = () => { SV.settings.skin = s.id; Store.set('sv_set', SV.settings); render(); };
+        } else {
+          d.innerHTML = `<b style="font-size:1.5rem; margin-bottom:10px;">???</b><small>Locked</small>`;
+        }
+        sg.appendChild(d);
+      });
+    }
+    
+    const clearBtn = qs('#clear-skin-btn');
+    if (clearBtn) {
+      clearBtn.onclick = () => { SV.settings.skin = null; Store.set('sv_set', SV.settings); render(); };
+    }
 
     render();
   }
