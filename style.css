@@ -183,7 +183,6 @@ canvas { display: block; }
   box-shadow: 0 0 6px #4ea8ff;
 }
 
-/* item specifically */
 #wardrobe-popup .item-swatch.active {
   background: #4ea8ff;
   color: #000;
@@ -233,7 +232,6 @@ canvas { display: block; }
   color: #fff;
 }
 
-/* small buttons */
 .btn.small {
   padding: 8px 10px;
 }
